@@ -8,11 +8,14 @@ using UnityEngine.Rendering.PostProcessing;
 public class LookMode : MonoBehaviour
 {
     private PostProcessVolume vol;
+    [Header("PostProcessVolumes")]
     public PostProcessProfile standard;
     public PostProcessProfile nightVision;
     public PostProcessProfile inventory;
+    [Header("Keybinds")]
+    public KeyCode N = KeyCode.N;
+    public KeyCode F = KeyCode.F;
     public GameObject nightVisionOverlay;
-    public GameObject flashLightOverlay;
     private Light flashlight;
     private bool nightVisionOn = false;
     private Camera cam;
@@ -26,7 +29,6 @@ public class LookMode : MonoBehaviour
         flashlight = GameObject.Find("flashlight").GetComponent<Light>();
         flashlight.enabled = false;
         nightVisionOverlay.SetActive(false);
-        flashLightOverlay.SetActive(false);
         vol.profile = standard;
         cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
 
@@ -37,7 +39,7 @@ public class LookMode : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(N))
         {
             // nightVisionOn = !nightVisionOn;  // Toggle the state
             if (nightVisionOn == false)
@@ -46,6 +48,7 @@ public class LookMode : MonoBehaviour
                 nightVisionOverlay.SetActive(true);
                 nightVisionOn = true;
                 NightVisionOff();
+                Debug.Log("Onnow");
             }
             else if (nightVisionOn == true)
             {
@@ -53,29 +56,27 @@ public class LookMode : MonoBehaviour
                 nightVisionOverlay.SetActive(false);
                 cam.fieldOfView = 60;
                 nightVisionOn = false;
+                Debug.Log("Offnow");
 
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.F))
-
+        if (Input.GetKeyDown(F))
         {
 
             if (flashLightOn == false)
             {
-                flashLightOverlay.SetActive(true);
                 flashlight.enabled = true;
                 flashLightOn = true;
                 FlashLightSwitchOff();
+                Debug.Log("FOnnow");
             }
 
             else if (flashLightOn == true)
             {
-                flashLightOverlay.SetActive(false);
                 flashlight.enabled = false;
-                flashLightOverlay.GetComponent<FlashLightScript>().StopDrain();
                 flashLightOn = false;
-
+                Debug.Log("FOffnow");
             }
 
         }
@@ -101,15 +102,11 @@ public class LookMode : MonoBehaviour
         }
         private void FlashLightSwitchOff()
         {
-            if (flashLightOverlay.GetComponent<FlashLightScript>().batteryPower <= 0)
-            {
-            flashLightOverlay.SetActive(false);
-            flashlight.enabled = false;
-            flashLightOverlay.GetComponent<FlashLightScript>().StopDrain();
+         flashlight.enabled = false;
             flashLightOn = false;
         }
+
         }
-    }
 
 
 
