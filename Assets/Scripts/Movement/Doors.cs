@@ -5,7 +5,8 @@ public class Doors : MonoBehaviour
 {
     public Animator door;
     public GameObject openText;
-    public AudioSource doorSound;
+    public AudioSource doorSoundOpen;
+    public AudioSource doorSoundClose;
 
     public LayerMask interactableLayer; // Add a LayerMask for raycasting
 
@@ -75,7 +76,7 @@ public class Doors : MonoBehaviour
         // Debug.Log("It Opens");
         door.SetBool("Open", true);
         door.SetBool("Closed", false);
-        doorSound.Play();
+        doorSoundOpen.Play();
     }
 
     void DoorCloses()
@@ -83,5 +84,6 @@ public class Doors : MonoBehaviour
         // Debug.Log("It Closes");
         door.SetBool("Open", false);
         door.SetBool("Closed", true);
+        doorSoundClose.Play();
     }
 }
