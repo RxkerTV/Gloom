@@ -9,6 +9,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float walkSpeed;
     public float sprintSpeed;
     public float slideSpeed;
+    public object reach;
 
     private float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
@@ -288,4 +289,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
     }
+    // Assign a specific layer to the reach object
+
 }
