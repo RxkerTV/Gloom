@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 public class Doors : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class Doors : MonoBehaviour
     public LayerMask interactableLayer; // Add a LayerMask for raycasting
 
     private bool inReach;
-
+    private bool doorOpen;
+  
     void Start()
     {
         inReach = false;
@@ -50,22 +52,22 @@ public class Doors : MonoBehaviour
                 Debug.Log("Looking at Door");
 
                 // Check for interaction input
-                if (inReach && Input.GetButtonDown("Interact"))
+                if (inReach && Input.GetButtonDown("Interact") && doorOpen==false)
                 {
                     DoorOpens();
+                    doorOpen = true;
+                    
                 }
                 // Optional: You might want to keep the door open if looking at it and in reach
-                else if (inReach)
+                else if (inReach && Input.GetButtonDown("Interact") && doorOpen==true)
                 {
-                    // Optional: Add code to keep the door open or handle other cases if needed
+                    DoorCloses();
+                    doorOpen = false;
                 }
+
             }
         }
-        // Handle door closing when not looking at it and interact button is pressed
-        else if (inReach && Input.GetButtonDown("Interact"))
-        {
-            DoorCloses();
-        }
+       
     }
 
     void DoorOpens()
