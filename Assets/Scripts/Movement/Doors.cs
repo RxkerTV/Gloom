@@ -57,13 +57,16 @@ public class Doors : MonoBehaviour
                 {
                     DoorOpens();
                     doorOpen = true;
-                    
+                    Debug.Log("Open");
+
+
                 }
                 // Optional: You might want to keep the door open if looking at it and in reach
                 else if (inReach && Input.GetButtonDown("Interact") && doorOpen==true)
                 {
                     DoorCloses();
                     doorOpen = false;
+                    Debug.Log("Closed");
                 }
 
             }

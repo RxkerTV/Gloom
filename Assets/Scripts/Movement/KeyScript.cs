@@ -20,6 +20,24 @@ public class KeyScript : MonoBehaviour
         interactText.SetActive(false);
     }
 
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Reach")
+        {
+            inReach = true;
+            interactText.SetActive(true);
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "Reach")
+        {
+            inReach = false;
+            interactText.SetActive(false);
+        }
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -27,7 +45,7 @@ public class KeyScript : MonoBehaviour
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        if (Physics.Raycast(ray, out hit, 10f, interactableLayer))
+        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
         {
             Debug.Log("Raycast Hit: " + hit.collider.name); // Debug log to show what the raycast hits
 
@@ -35,11 +53,13 @@ public class KeyScript : MonoBehaviour
             {
                 if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
                 {
+                    Debug.Log("PickedupKey");
                     Key.SetActive(false);
-
+                    DoorsLocked.Instance.hasKey = true;
                 }
             }
         }
 
     }
+
 }

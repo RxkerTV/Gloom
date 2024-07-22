@@ -3,7 +3,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class DoorsLocked : MonoBehaviour
+public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
 {
     public Animator door1;
     public GameObject openText;
@@ -76,7 +76,7 @@ public class DoorsLocked : MonoBehaviour
                 {
                     DoorOpens();
                     doorOpen = true;
-                    
+                    Debug.Log("Open");
                     
                     
                 }
@@ -85,10 +85,12 @@ public class DoorsLocked : MonoBehaviour
                 {
                     DoorCloses();
                     doorOpen = false;
+                    Debug.Log("close");
                 }
 
                 if (inReach && Input.GetButtonDown("Interact") && hasKey == false && doorOpen == false)
                 {
+                    Debug.Log("Locked");
                     LockedSound.Play();
                 }
 
