@@ -12,8 +12,6 @@ public class KeyScript : MonoBehaviour
 
     public LayerMask interactableLayer;
 
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -52,16 +50,15 @@ public class KeyScript : MonoBehaviour
 
             if (hit.collider.gameObject == gameObject)
             {
+                inReach = true;
                 if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
                 {
-                    Debug.Log("PickedupKey");
+                    Debug.Log("Picked up Key");
                     Key.SetActive(false);
-                    DoorsLocked.Instance.hasKey = true;
+                    DoorsLocked.Instance.hasKey = true; // Set hasKey to true when the key is picked up
                     interactText.SetActive(false);
                 }
             }
         }
-
     }
-
 }

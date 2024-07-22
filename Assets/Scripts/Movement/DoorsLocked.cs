@@ -11,8 +11,6 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
     public AudioSource doorSoundOpen;
     public AudioSource doorSoundClose;
     public AudioSource LockedSound;
-    
-    
 
     public LayerMask interactableLayer; // Add a LayerMask for raycasting
 
@@ -27,7 +25,8 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
         locked = true;
         unlocked = false;
         inReach = false;
-        hasKey = false;
+        doorOpen = false; // Initialize doorOpen
+        hasKey = false; // Ensure hasKey is false at start
         openText.SetActive(false); // Ensure the text is hidden at the start
     }
 
@@ -51,62 +50,42 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
 
     void Update()
     {
-        if (KeyINV.activeInHierarchy)
-        {
-            locked = false;
-            hasKey = true;
-        }
-
-        else
-        {
-            hasKey = false;
-        }
         // Perform raycasting to check if the player is looking at the door
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        if (Physics.Raycast(ray, out hit, 10f, interactableLayer))
+        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
         {
             Debug.Log("Raycast Hit: " + hit.collider.name); // Debug log to show what the raycast hits
 
             if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
             {
-              
                 // Check for interaction input
-                if (inReach && Input.GetButtonDown("Interact") && doorOpen == false && hasKey == true)
+                if (inReach && Input.GetButtonDown("Interact") && !doorOpen && hasKey)
                 {
                     DoorOpens();
                     doorOpen = true;
                     Debug.Log("Open");
                     locked = false;
                     unlocked = true;
-
-
                 }
-                // Optional: You might want to keep the door open if looking at it and in reach
-                else if (inReach && Input.GetButtonDown("Interact") && doorOpen == true && unlocked == true)
+                else if (inReach && Input.GetButtonDown("Interact") && doorOpen && unlocked)
                 {
                     DoorCloses();
-                    
                     doorOpen = false;
                     Debug.Log("close");
                 }
-
-                if (inReach && Input.GetButtonDown("Interact") && hasKey == false && doorOpen == false)
+                else if (inReach && Input.GetButtonDown("Interact") && !hasKey && !doorOpen)
                 {
                     Debug.Log("Locked");
                     LockedSound.Play();
-                    
                 }
-
             }
         }
-       
     }
 
     void DoorOpens()
     {
-        // Debug.Log("It Opens");
         door1.SetBool("Open", true);
         door1.SetBool("Closed", false);
         doorSoundOpen.Play();
@@ -114,12 +93,8 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
 
     void DoorCloses()
     {
-        // Debug.Log("It Closes");
         door1.SetBool("Open", false);
         door1.SetBool("Closed", true);
-        
         doorSoundClose.Play();
     }
-    
-
 }
