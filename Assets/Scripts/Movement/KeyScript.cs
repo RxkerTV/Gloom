@@ -17,6 +17,7 @@ public class KeyScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        inReach = false;
         interactText.SetActive(false);
     }
 
@@ -56,6 +57,7 @@ public class KeyScript : MonoBehaviour
                     Debug.Log("PickedupKey");
                     Key.SetActive(false);
                     DoorsLocked.Instance.hasKey = true;
+                    interactText.SetActive(false);
                 }
             }
         }

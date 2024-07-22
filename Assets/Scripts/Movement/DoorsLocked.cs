@@ -24,7 +24,10 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
 
     void Start()
     {
+        locked = true;
+        unlocked = false;
         inReach = false;
+        hasKey = false;
         openText.SetActive(false); // Ensure the text is hidden at the start
     }
 
@@ -33,7 +36,6 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
         if (other.CompareTag("Reach"))
         {
             inReach = true;
-            Debug.Log("inreach is true");
             openText.SetActive(true);
         }
     }
@@ -69,21 +71,23 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
 
             if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
             {
-                Debug.Log("Looking at A Locked Door");
-
+              
                 // Check for interaction input
-                if (inReach && Input.GetButtonDown("Interact") && doorOpen==false && hasKey == true)
+                if (inReach && Input.GetButtonDown("Interact") && doorOpen == false && hasKey == true)
                 {
                     DoorOpens();
                     doorOpen = true;
                     Debug.Log("Open");
-                    
-                    
+                    locked = false;
+                    unlocked = true;
+
+
                 }
                 // Optional: You might want to keep the door open if looking at it and in reach
-                else if (inReach && Input.GetButtonDown("Interact") && doorOpen==true)
+                else if (inReach && Input.GetButtonDown("Interact") && doorOpen == true && unlocked == true)
                 {
                     DoorCloses();
+                    
                     doorOpen = false;
                     Debug.Log("close");
                 }
@@ -92,6 +96,7 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
                 {
                     Debug.Log("Locked");
                     LockedSound.Play();
+                    
                 }
 
             }

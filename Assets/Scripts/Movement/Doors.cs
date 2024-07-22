@@ -24,7 +24,6 @@ public class Doors : MonoBehaviour
         if (other.CompareTag("Reach"))
         {
             inReach = true;
-            Debug.Log("inreach is true");
             openText.SetActive(true);
         }
     }
@@ -49,8 +48,7 @@ public class Doors : MonoBehaviour
             Debug.Log("Raycast Hit: " + hit.collider.name); // Debug log to show what the raycast hits
 
             if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
-            {
-                Debug.Log("Looking at Door");
+            { 
 
                 // Check for interaction input
                 if (inReach && Input.GetButtonDown("Interact") && doorOpen==false)
