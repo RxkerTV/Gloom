@@ -129,58 +129,66 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void StateHandler()
     {
-        // Mode - Sliding
-        if (sliding)
+        //if (PlayerCam.Instance.INventoryOn == false)
         {
-            state = MovementState.sliding;
 
-            if (OnSlope() && rb.velocity.y < 0.1f)
-                desiredMoveSpeed = slideSpeed;
+            // Mode - Sliding
+            if (sliding)
+            {
+                state = MovementState.sliding;
 
-            else
+                if (OnSlope() && rb.velocity.y < 0.1f)
+                    desiredMoveSpeed = slideSpeed;
+
+                else
+                    desiredMoveSpeed = sprintSpeed;
+            }
+
+
+            // Mode - Crouching
+            else if (Input.GetKey(crouchKey))
+            {
+                state = MovementState.crouching;
+                desiredMoveSpeed = crouchSpeed;
+            }
+
+            // Mode - Sprinting
+            else if (grounded && Input.GetKey(sprintKey))
+            {
+                state = MovementState.sprinting;
                 desiredMoveSpeed = sprintSpeed;
-        }
+            }
 
-        // Mode - Crouching
-        else if (Input.GetKey(crouchKey))
-        {
-            state = MovementState.crouching;
-            desiredMoveSpeed = crouchSpeed;
-        }
 
-        // Mode - Sprinting
-        else if(grounded && Input.GetKey(sprintKey))
-        {
-            state = MovementState.sprinting;
-            desiredMoveSpeed = sprintSpeed;
-        }
+            // Mode - Walking
+            else if (grounded)
+            {
+                state = MovementState.walking;
+                desiredMoveSpeed = walkSpeed;
+            }
 
-        // Mode - Walking
-        else if (grounded)
-        {
-            state = MovementState.walking;
-            desiredMoveSpeed = walkSpeed;
-        }
+            // Mode - Air
+            else
+            {
+                state = MovementState.air;
+            }
 
-        // Mode - Air
-        else
-        {
-            state = MovementState.air;
-        }
+            // check if desiredMoveSpeed has changed drastically
+            if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
+            {
+                StopAllCoroutines();
+                StartCoroutine(SmoothlyLerpMoveSpeed());
+            }
+            else
+            {
+                moveSpeed = desiredMoveSpeed;
+            }
 
-        // check if desiredMoveSpeed has changed drastically
-        if(Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
-        {
-            StopAllCoroutines();
-            StartCoroutine(SmoothlyLerpMoveSpeed());
-        }
-        else
-        {
-            moveSpeed = desiredMoveSpeed;
-        }
 
-        lastDesiredMoveSpeed = desiredMoveSpeed;
+            lastDesiredMoveSpeed = desiredMoveSpeed;
+        }
     }
+
 
     private IEnumerator SmoothlyLerpMoveSpeed()
     {
@@ -211,28 +219,32 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void MovePlayer()
     {
-        // calculate movement direction
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        if (PlayerCam.Instance.INventoryOn == false)
 
-        // on slope
-        if (OnSlope() && !exitingSlope)
         {
-            rb.AddForce(GetSlopeMoveDirection(moveDirection) * moveSpeed * 20f, ForceMode.Force);
+            // calculate movement direction
+            moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-            if (rb.velocity.y > 0)
-                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            // on slope
+            if (OnSlope() && !exitingSlope)
+            {
+                rb.AddForce(GetSlopeMoveDirection(moveDirection) * moveSpeed * 20f, ForceMode.Force);
+
+                if (rb.velocity.y > 0)
+                    rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+
+            // on ground
+            else if (grounded)
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+            // in air
+            else if (!grounded)
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+            // turn gravity off while on slope
+            rb.useGravity = !OnSlope();
         }
-
-        // on ground
-        else if(grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
-
-        // in air
-        else if(!grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-
-        // turn gravity off while on slope
-        rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl()
@@ -260,12 +272,15 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void Jump()
     {
-        exitingSlope = true;
+        if (PlayerCam.Instance.INventoryOn == false)
+        {
+            exitingSlope = true;
 
-        // reset y velocity
-        rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            // reset y velocity
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        }
     }
     private void ResetJump()
     {

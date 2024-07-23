@@ -78,7 +78,7 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
                 else if (inReach && Input.GetButtonDown("Interact") && !hasKey && !doorOpen)
                 {
                     Debug.Log("Locked");
-                    LockedSound.Play();
+                    
                 }
             }
         }

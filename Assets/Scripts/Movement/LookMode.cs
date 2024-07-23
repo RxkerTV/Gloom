@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 //Gives us access to post processing 
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.UIElements;
 
 public class LookMode : MonoBehaviour
 {
@@ -15,11 +16,14 @@ public class LookMode : MonoBehaviour
     [Header("Keybinds")]
     public KeyCode N = KeyCode.N;
     public KeyCode F = KeyCode.F;
+    public KeyCode Tab = KeyCode.Tab;
     public GameObject nightVisionOverlay;
     private Light flashlight;
     private bool nightVisionOn = false;
     private Camera cam;
     private bool flashLightOn = false;
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -35,16 +39,33 @@ public class LookMode : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(N))
+        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.INventoryOn == false)
         {
             nightVisionOn = !nightVisionOn;
             ToggleNightVision(nightVisionOn);
         }
 
-        if (Input.GetKeyDown(F))
+        if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.INventoryOn == false)
         {
             flashLightOn = !flashLightOn;
             ToggleFlashlight(flashLightOn);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            if (PlayerCam.Instance.INventoryOn==false)
+            {
+                PlayerCam.Instance.INventoryOn = true;
+                vol.profile = inventory;
+                flashlight.enabled = false;
+                nightVisionOverlay.SetActive(false);
+
+            }
+            else if (PlayerCam.Instance.INventoryOn == true)
+            {
+                PlayerCam.Instance.INventoryOn = false;
+                vol.profile = standard;
+            }
         }
     }
 
@@ -54,20 +75,26 @@ public class LookMode : MonoBehaviour
         {
             vol.profile = nightVision;
             nightVisionOverlay.SetActive(true);
-            Debug.Log("Onnow");
+         
         }
         else
         {
             vol.profile = standard;
             nightVisionOverlay.SetActive(false);
             cam.fieldOfView = 60;
-            Debug.Log("Offnow");
+            
         }
     }
 
     private void ToggleFlashlight(bool state)
     {
         flashlight.enabled = state;
-        Debug.Log(state ? "FOnnow" : "FOffnow");
+        
+    }
+
+    private void ToggleInventory()
+    {
+        vol.profile = inventory;
+        
     }
 }
