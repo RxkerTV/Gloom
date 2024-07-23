@@ -54,7 +54,7 @@ public class Paper : MonoBehaviour
                     Debug.Log("Picked up Key");
                     Paperr.SetActive(false);
                     UI.Instance.interactText.SetActive(false);
-                    //PickUpPaper.Play();
+                    PickUpPaper.Play();
                 }
             }
         }
