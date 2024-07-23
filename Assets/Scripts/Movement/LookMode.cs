@@ -35,17 +35,17 @@ public class LookMode : MonoBehaviour
         vol.profile = standard;
         cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
     }
-
+    #region Update
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.INventoryOn == false)
+        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.inventoryOn == false)
         {
             nightVisionOn = !nightVisionOn;
             ToggleNightVision(nightVisionOn);
         }
 
-        if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.INventoryOn == false)
+        if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.inventoryOn == false)
         {
             flashLightOn = !flashLightOn;
             ToggleFlashlight(flashLightOn);
@@ -53,22 +53,22 @@ public class LookMode : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (PlayerCam.Instance.INventoryOn==false)
+            if (PlayerCam.Instance.inventoryOn==false)
             {
-                PlayerCam.Instance.INventoryOn = true;
+                PlayerCam.Instance.inventoryOn = true;
                 vol.profile = inventory;
                 flashlight.enabled = false;
                 nightVisionOverlay.SetActive(false);
 
             }
-            else if (PlayerCam.Instance.INventoryOn == true)
+            else if (PlayerCam.Instance.inventoryOn == true)
             {
-                PlayerCam.Instance.INventoryOn = false;
+                PlayerCam.Instance.inventoryOn = false;
                 vol.profile = standard;
             }
         }
     }
-
+    #endregion
     private void ToggleNightVision(bool state)
     {
         if (state)
