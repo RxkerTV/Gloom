@@ -219,7 +219,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (PlayerCam.Instance.INventoryOn == false)
+        if (PlayerCam.Instance.inventoryOn == false)
 
         {
             // calculate movement direction
@@ -272,7 +272,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void Jump()
     {
-        if (PlayerCam.Instance.INventoryOn == false)
+        if (PlayerCam.Instance.inventoryOn == false)
         {
             exitingSlope = true;
 
