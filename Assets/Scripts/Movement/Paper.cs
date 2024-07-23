@@ -7,7 +7,6 @@ public class Paper : MonoBehaviour
 {
     public GameObject Paperr;
     public AudioSource PickUpPaper;
-
     private bool inReach;
 
     public LayerMask interactableLayer;
