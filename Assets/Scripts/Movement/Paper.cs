@@ -6,6 +6,7 @@ using UnityEngine;
 public class Paper : MonoBehaviour
 {
     public GameObject Paperr;
+    public GameObject interactText;
     public AudioSource PickUpPaper;
 
     private bool inReach;
@@ -24,7 +25,7 @@ public class Paper : MonoBehaviour
         if (other.gameObject.tag == "Reach")
         {
             inReach = true;
-            UI.Instance.interactText.SetActive(true);
+            interactText.SetActive(true);
         }
     }
 
@@ -33,7 +34,7 @@ public class Paper : MonoBehaviour
         if (other.gameObject.tag == "Reach")
         {
             inReach = false;
-            UI.Instance.interactText.SetActive(false);
+            interactText.SetActive(false);
         }
 
     }
@@ -54,8 +55,8 @@ public class Paper : MonoBehaviour
                 {
                     Debug.Log("Picked up Key");
                     Paperr.SetActive(false);
-                    UI.Instance.interactText.SetActive(false);
-                    //PickUpPaper.Play();
+                    interactText.SetActive(false);
+                    PickUpPaper.Play();
                 }
             }
         }
