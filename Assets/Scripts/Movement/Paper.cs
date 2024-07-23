@@ -7,7 +7,7 @@ public class Paper : MonoBehaviour
 {
     public GameObject Paperr;
     public GameObject interactText;
-
+    public AudioSource PickUpPaper;
     private bool inReach;
 
     public LayerMask interactableLayer;
@@ -55,6 +55,7 @@ public class Paper : MonoBehaviour
                     Debug.Log("Picked up Key");
                     Paperr.SetActive(false);
                     interactText.SetActive(false);
+                    PickUpPaper.Play();
                 }
             }
         }
