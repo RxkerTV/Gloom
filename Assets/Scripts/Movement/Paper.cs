@@ -1,23 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.U2D.ScriptablePacker;
 
 public class Paper : MonoBehaviour
 {
     public GameObject Paperr;
     public AudioSource PickUpPaper;
     private bool inReach;
-    public NoteData noteData;
+    //public NoteData noteData;
     public LayerMask interactableLayer;
     public Transform inventoryParent; // The parent object of the inventory item slots (GLG)
-
-    // Start is called before the first frame update
+    public Transform playerTransform; // Reference to the player's transform
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Reach")
+        if (other.CompareTag("Reach"))
         {
             inReach = true;
             UI.Instance.interactText.SetActive(true);
@@ -26,34 +23,55 @@ public class Paper : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Reach")
+        if (other.CompareTag("Reach"))
         {
             inReach = false;
             UI.Instance.interactText.SetActive(false);
         }
-
     }
-    void Update()
+
+    private void Update()
     {
-        if (inReach && Input.GetButtonDown("Interact") && Paperr.activeInHierarchy == true)
+        if (playerTransform == null)
         {
-            Paperr.SetActive(false);
-            UI.Instance.interactText.SetActive(false);
-            PickUpPaper.Play();
+            Debug.LogError("Player transform is not assigned.");
+            return;
+        }
 
-            NoteData note = GetComponent<NoteData>();
+        // Create the ray from the player's position and forward direction
+        Ray ray = new Ray(playerTransform.position, playerTransform.forward);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
+        {
+            Debug.DrawRay(ray.origin, ray.direction * 2.5f, Color.red, 1f);
+            Debug.Log($"Raycast hit: {hit.collider.name}");
+
+            Note note = hit.collider.GetComponent<Note>();
+            if (note == null)
             {
-                ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
-
-                foreach (ItemSlot slot in slots)
+                Debug.Log("No Note component found on hit object.");
+            }
+            else
+            {
+                if (note.noteData == null)
                 {
-                    if (slot.empty)
+                    Debug.Log("NoteData is not assigned.");
+                }
+                else
+                {
+                    Debug.Log($"NoteData found: {note.noteData.name}");
+                    ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
+                    foreach (ItemSlot slot in slots)
                     {
-                        slot.SetItem(note);
-                        Debug.Log($"{note.name} + {note.sentences}");
-                        Destroy(gameObject); // Remove the item from the scene
-
-                        return;
+                        if (slot.empty)
+                        {
+                            slot.SetItem(note.noteData);
+                            UI.Instance.interactText.SetActive(false);
+                            PickUpPaper.Play();
+                            Destroy(hit.collider.gameObject);
+                            return;
+                        }
                     }
                 }
             }

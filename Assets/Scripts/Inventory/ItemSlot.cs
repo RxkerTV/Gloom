@@ -41,11 +41,11 @@ public class ItemSlot : MonoBehaviour
         itemImage.gameObject.SetActive(false); // Deactivate the image when the slot is empty
     }
 
-    public void Update()
-    {
-        if(empty)
-        {
+    //public void Update()
+    //{
+    //    if(empty)
+    //    {
 
-        }
-    }
+    //    }
+    //}
 }

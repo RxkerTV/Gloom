@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2471737785895153643}
   - component: {fileID: 5725722408272129208}
   - component: {fileID: 8830024616222157719}
+  - component: {fileID: 4402853534082882235}
   m_Layer: 9
   m_Name: Paper
   m_TagString: Item
@@ -126,3 +127,17 @@ MonoBehaviour:
   interactableLayer:
     serializedVersion: 2
     m_Bits: 512
+  inventoryParent: {fileID: 0}
+--- !u!114 &4402853534082882235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5673646630329741218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6771b6b790a4e44aec6474f3299e21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noteData: {fileID: 0}
