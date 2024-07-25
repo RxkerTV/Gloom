@@ -11,6 +11,7 @@
 //    {
 //        if (other.CompareTag("Item")) // Assuming your items have the "Item" tag
 //        {
+//            NoteData note = other.GetComponent<NoteData>();
 //            {
 //                ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
 
@@ -18,7 +19,7 @@
 //                {
 //                    if (slot.empty)
 //                    {
-//                        slot.SetItem();
+//                        slot.SetItem(note);
 //                        Destroy(other.gameObject); // Remove the item from the scene
 
 //                        return;

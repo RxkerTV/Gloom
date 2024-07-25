@@ -4,7 +4,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerCam : SingletonMonoBehaviour<PlayerCam> 
+public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 {
     public float sensX;
     public float sensY;
@@ -14,12 +14,12 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public Ray ray;
     float xRotation;
     float yRotation;
-    public bool INventoryOn;
+    public bool InventoryOn;
     private bool inReach;
-
+    public Transform inventoryParent; // The parent object of the inventory item slots (GLG)
     private void Start()
     {
-        INventoryOn = false;
+        InventoryOn = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -46,11 +46,11 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         // get mouse input
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
-        if (INventoryOn == false)
+        if (InventoryOn == false)
         {
             yRotation += mouseX;
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+            xRotation -= mouseY;
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             // rotate cam and orientation
             transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
@@ -62,16 +62,19 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 
             if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
             {
+                { 
                 inReach = true;
-            }
+               
+                }
 
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        if (INventoryOn == true)
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            if (InventoryOn == true)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Confined;
+            }
         }
     }
 }

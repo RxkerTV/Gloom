@@ -11,14 +11,9 @@ public class Paper : MonoBehaviour
     private bool inReach;
     public NoteData noteData;
     public LayerMask interactableLayer;
-
+    public Transform inventoryParent; // The parent object of the inventory item slots (GLG)
 
     // Start is called before the first frame update
-    void Start()
-    {
-        noteData = ScriptableObject.CreateInstance<NoteData>();
-    }
-
 
     void OnTriggerEnter(Collider other)
     {
@@ -45,6 +40,23 @@ public class Paper : MonoBehaviour
             Paperr.SetActive(false);
             UI.Instance.interactText.SetActive(false);
             PickUpPaper.Play();
+
+            NoteData note = GetComponent<NoteData>();
+            {
+                ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
+
+                foreach (ItemSlot slot in slots)
+                {
+                    if (slot.empty)
+                    {
+                        slot.SetItem(note);
+                        Debug.Log($"{note.name} + {note.sentences}");
+                        Destroy(gameObject); // Remove the item from the scene
+
+                        return;
+                    }
+                }
+            }
         }
     }
 }

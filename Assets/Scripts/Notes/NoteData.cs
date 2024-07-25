@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewNoteData", menuName = "ScriptableObjects/NoteData", order = 1)]
-public class NoteData : ScriptableObject
+public class NoteData : Item
 {
-    // Your fields and properties here
+    public string name;
+    public string[] sentences;
 }

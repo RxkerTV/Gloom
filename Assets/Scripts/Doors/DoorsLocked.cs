@@ -55,8 +55,7 @@ public class DoorsLocked : SingletonMonoBehaviour<DoorsLocked>
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
         if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
-        {
-            Debug.Log("Raycast Hit: " + hit.collider.name); // Debug log to show what the raycast hits
+        { 
 
             if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
             {
