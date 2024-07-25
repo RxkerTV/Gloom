@@ -12,11 +12,11 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public object FlashLight;
     float xRotation;
     float yRotation;
-    public bool inventoryOn;
+    public bool INventoryOn;
 
     private void Start()
     {
-        inventoryOn = false;
+        INventoryOn = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -26,13 +26,13 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         // get mouse input
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
-        if (inventoryOn == false)
+
+        yRotation += mouseX;
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+
+        if (INventoryOn == false)
         {
-            yRotation += mouseX;
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-
-
             // rotate cam and orientation
             transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
@@ -48,11 +48,8 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
                 Debug.Log("Hit: " + hit.collider.name);
 
             }
-
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
         }
-        if (inventoryOn == true)
+        if (INventoryOn == true)
         {
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.Confined;

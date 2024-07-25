@@ -6,6 +6,7 @@ using UnityEngine;
 public class KeyScript : MonoBehaviour
 {
     public GameObject Key;
+    public GameObject interactText;
 
     private bool inReach;
 
@@ -15,7 +16,7 @@ public class KeyScript : MonoBehaviour
     void Start()
     {
         inReach = false;
-        UI.Instance.interactText.SetActive(false);
+        interactText.SetActive(false);
     }
 
     void OnTriggerEnter(Collider other)
@@ -23,7 +24,7 @@ public class KeyScript : MonoBehaviour
         if (other.gameObject.tag == "Reach")
         {
             inReach = true;
-            UI.Instance.interactText.SetActive(true);
+            interactText.SetActive(true);
         }
     }
 
@@ -32,7 +33,7 @@ public class KeyScript : MonoBehaviour
         if (other.gameObject.tag == "Reach")
         {
             inReach = false;
-            UI.Instance.interactText.SetActive(false);
+            interactText.SetActive(false);
         }
     }
 
@@ -55,7 +56,7 @@ public class KeyScript : MonoBehaviour
                     Debug.Log("Picked up Key");
                     Key.SetActive(false);
                     DoorsLocked.Instance.hasKey = true; // Set hasKey to true when the key is picked up
-                    UI.Instance.interactText.SetActive(false);
+                    interactText.SetActive(false);
                 }
             }
         }
