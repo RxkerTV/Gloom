@@ -2,21 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.U2D.ScriptablePacker;
 
 public class Paper : MonoBehaviour
 {
     public GameObject Paperr;
     public AudioSource PickUpPaper;
     private bool inReach;
-
+    public NoteData noteData;
     public LayerMask interactableLayer;
 
 
     // Start is called before the first frame update
     void Start()
     {
-
+        noteData = ScriptableObject.CreateInstance<NoteData>();
     }
+
 
     void OnTriggerEnter(Collider other)
     {
@@ -38,25 +40,11 @@ public class Paper : MonoBehaviour
     }
     void Update()
     {
-        // Perform raycasting to check if the player is looking at the door
-        RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-
-        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
+        if (inReach && Input.GetButtonDown("Interact") && Paperr.activeInHierarchy == true)
         {
-            Debug.Log("Raycast Hit: " + hit.collider.name); // Debug log to show what the raycast hits
-
-            if (hit.collider.gameObject == gameObject)
-            {
-                inReach = true;
-                if (inReach && Input.GetButtonDown("Interact") && Paperr.activeInHierarchy == true)
-                {
-                    Debug.Log("Picked up Key");
-                    Paperr.SetActive(false);
-                    UI.Instance.interactText.SetActive(false);
-                    PickUpPaper.Play();
-                }
-            }
+            Paperr.SetActive(false);
+            UI.Instance.interactText.SetActive(false);
+            PickUpPaper.Play();
         }
     }
 }
