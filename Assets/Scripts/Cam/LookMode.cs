@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 
 public class LookMode : SingletonMonoBehaviour<LookMode>
 {
-    private PostProcessVolume vol;
+    public PostProcessVolume vol;
     [Header("PostProcessVolumes")]
     public PostProcessProfile standard;
     public PostProcessProfile nightVision;
@@ -19,11 +19,11 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     public KeyCode Tab = KeyCode.Tab;
     public GameObject nightVisionOverlay;
     private Light flashlight;
-    private bool nightVisionOn = false;
+    public bool nightVisionOn = false;
     private Camera cam;
-    private bool flashLightOn = false;
+    public bool flashLightOn = false;
     public bool PauseMenuOn = false;
-    
+
 
     // Start is called before the first frame update
     void Start()
@@ -42,7 +42,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn==false)
+        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false)
         {
             nightVisionOn = !nightVisionOn;
             ToggleNightVision(nightVisionOn);
@@ -56,11 +56,20 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-                ToggleInventory();
+            ToggleInventory();
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            TogglePauseMenu();
+
+            if (PauseMenuOn == false)
+            {
+                vol.profile = inventory;
+                PauseMenuOn = true;
+                flashlight.enabled = false;
+                nightVisionOverlay.SetActive(false);
+                UI.Instance.PauseMenu.SetActive(true);
+            }
+
         }
     }
     private void ToggleNightVision(bool state)
@@ -69,21 +78,21 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
         {
             vol.profile = nightVision;
             nightVisionOverlay.SetActive(true);
-         
+
         }
         else
         {
             vol.profile = standard;
             nightVisionOverlay.SetActive(false);
             cam.fieldOfView = 60;
-            
+
         }
     }
 
     private void ToggleFlashlight(bool state)
     {
         flashlight.enabled = state;
-        
+
     }
 
 
@@ -104,22 +113,23 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
             UI.Instance.InventoryMenu.SetActive(false);
         }
     }
-    private void TogglePauseMenu()
-    {
-        if(PauseMenuOn == false)
-        {
-            vol.profile = inventory;
-            PauseMenuOn = true;
-            flashlight.enabled = false;
-            nightVisionOverlay.SetActive(false);
-            UI.Instance.PauseMenu.SetActive(true);
-        }
-        else if (PauseMenuOn == true)
-        {
-            vol.profile = standard;
-            PauseMenuOn = false;
-            UI.Instance.PauseMenu.SetActive(false);
-        }
-    }
 }
+//    private void TogglePauseMenu()
+//    {
+//        if(PauseMenuOn == false && GetKeyDown(KeyCode.Q))
+//        {
+//            vol.profile = inventory;
+//            PauseMenuOn = true;
+//            flashlight.enabled = false;
+//            nightVisionOverlay.SetActive(false);
+//            UI.Instance.PauseMenu.SetActive(true);
+//        }
+//        else if (PauseMenuOn == true)
+//        {
+//            vol.profile = standard;
+//            PauseMenuOn = false;
+//            UI.Instance.PauseMenu.SetActive(false);
+//        }
+//    }
+//}
 
