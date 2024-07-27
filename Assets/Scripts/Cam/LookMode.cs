@@ -63,11 +63,13 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
 
             if (PauseMenuOn == false)
             {
+               
                 vol.profile = inventory;
                 PauseMenuOn = true;
                 flashlight.enabled = false;
                 nightVisionOverlay.SetActive(false);
                 UI.Instance.PauseMenu.SetActive(true);
+                UI.Instance.PauseOptions.SetActive(true);
             }
 
         }

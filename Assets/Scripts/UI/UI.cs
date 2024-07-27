@@ -10,7 +10,13 @@ public class UI : SingletonMonoBehaviour<UI>
     public GameObject itemSlotPrefb;
     public GameObject InventoryMenu;
     public GameObject interactText;
+    [Header("PauseMENU----------")]
     public GameObject PauseMenu;
+    public GameObject PauseOptions;
+    [Header("Quit")]
+    public GameObject Mainmenu;
+    public GameObject Desktop;
+    public GameObject Cancel;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
 
     
@@ -19,6 +25,10 @@ public class UI : SingletonMonoBehaviour<UI>
     void Start()
     {
         PauseMenu.SetActive(false);
+        PauseOptions.SetActive(false);
+        Mainmenu.SetActive(false);
+        Desktop.SetActive(false);
+        Cancel.SetActive(false);
     }
 
     // Update is called once per frame
