@@ -43,7 +43,7 @@ public class Doors : MonoBehaviour
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        if (Physics.Raycast(ray, out hit, 10f, interactableLayer))
+        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
         { 
             if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
             { 

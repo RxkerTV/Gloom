@@ -28,12 +28,14 @@ public class LookMode : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         vol = GetComponent<PostProcessVolume>();
         flashlight = GameObject.Find("flashlight").GetComponent<Light>();
         flashlight.enabled = false;
         nightVisionOverlay.SetActive(false);
         vol.profile = standard;
         cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
+        UI.Instance.InventoryMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -53,22 +55,12 @@ public class LookMode : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            if (PlayerCam.Instance.InventoryOn==false)
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
-                PlayerCam.Instance.InventoryOn = true;
-                vol.profile = inventory;
-                flashlight.enabled = false;
-                nightVisionOverlay.SetActive(false);
-
-            }
-            else if (PlayerCam.Instance.InventoryOn == true)
-            {
-                PlayerCam.Instance.InventoryOn = false;
-                vol.profile = standard;
+                ToggleInventory();
             }
         }
     }
-
     private void ToggleNightVision(bool state)
     {
         if (state)
@@ -92,9 +84,23 @@ public class LookMode : MonoBehaviour
         
     }
 
+
     private void ToggleInventory()
     {
-        vol.profile = inventory;
-        
+        PlayerCam.Instance.InventoryOn = !PlayerCam.Instance.InventoryOn;
+
+        if (PlayerCam.Instance.InventoryOn)
+        {
+            vol.profile = inventory;
+            flashlight.enabled = false;
+            nightVisionOverlay.SetActive(false);
+            UI.Instance.InventoryMenu.SetActive(true);
+        }
+        else
+        {
+            vol.profile = standard;
+            UI.Instance.InventoryMenu.SetActive(false);
+        }
     }
 }
+

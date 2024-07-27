@@ -43,11 +43,12 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     }
     private void Update()
     {
-        // get mouse input
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
-        if (InventoryOn == false)
+        if (!InventoryOn)
         {
+            // get mouse input
+            float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
+            float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+
             yRotation += mouseX;
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -56,25 +57,13 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
             transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
 
-            // raycast logic
-            RaycastHit hit;
-            Debug.DrawRay(ray.origin, ray.direction * 2.5f, Color.red); // Adjust the length (10f) and color (Color.red) as needed
-
-            if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
-            {
-                { 
-                inReach = true;
-               
-                }
-
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-            if (InventoryOn == true)
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.Confined;
-            }
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        }
+        else
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.Confined;
         }
     }
 }

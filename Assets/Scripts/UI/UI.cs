@@ -8,6 +8,7 @@ public class UI : SingletonMonoBehaviour<UI>
     public GameObject inventoryPanel;
     public GameObject itemSlots;
     public GameObject itemSlotPrefb;
+    public GameObject InventoryMenu;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
     public GameObject interactText;
 

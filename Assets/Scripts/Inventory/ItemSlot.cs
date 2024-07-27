@@ -24,6 +24,7 @@ public class ItemSlot : MonoBehaviour
         {
             canvasGroup = gameObject.AddComponent<CanvasGroup>();
         }
+        itemImage = GetComponent<Image>();
     }
     public void SetItem(Item newItem)
     {

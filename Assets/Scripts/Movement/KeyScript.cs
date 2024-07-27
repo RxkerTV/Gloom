@@ -44,13 +44,12 @@ public class KeyScript : MonoBehaviour
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
         if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
-        { 
-
+        {
             if (hit.collider.gameObject == gameObject)
             {
                 inReach = true;
                 if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
-                
+                {
                     Key.SetActive(false);
                     DoorsLocked.Instance.hasKey = true; // Set hasKey to true when the key is picked up
                     UI.Instance.interactText.SetActive(false);
@@ -58,4 +57,5 @@ public class KeyScript : MonoBehaviour
             }
         }
     }
+}
 

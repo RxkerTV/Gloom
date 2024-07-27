@@ -34,43 +34,34 @@ public class Paper : MonoBehaviour
     {
         if (playerTransform == null)
         {
-            Debug.LogError("Player transform is not assigned.");
             return;
         }
 
-        // Create the ray from the player's position and forward direction
-        Ray ray = new Ray(playerTransform.position, playerTransform.forward);
-        RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
         {
-            Debug.DrawRay(ray.origin, ray.direction * 2.5f, Color.red, 1f);
-            Debug.Log($"Raycast hit: {hit.collider.name}");
+            // Create the ray from the player's position and forward direction
+            Ray ray = new Ray(playerTransform.position, playerTransform.forward);
+            RaycastHit hit;
 
-            Note note = hit.collider.GetComponent<Note>();
-            if (note == null)
+            if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
             {
-                Debug.Log("No Note component found on hit object.");
-            }
-            else
-            {
-                if (note.noteData == null)
+                // Check if the interact button is pressed
+                if (Input.GetButtonDown("Interact"))
                 {
-                    Debug.Log("NoteData is not assigned.");
-                }
-                else
-                {
-                    Debug.Log($"NoteData found: {note.noteData.name}");
-                    ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
-                    foreach (ItemSlot slot in slots)
+                    Note note = hit.collider.GetComponent<Note>();
+                    if (note != null && note.noteData != null)
                     {
-                        if (slot.empty)
+                        ItemSlot[] slots = inventoryParent.GetComponentsInChildren<ItemSlot>();
+                        foreach (ItemSlot slot in slots)
                         {
-                            slot.SetItem(note.noteData);
-                            UI.Instance.interactText.SetActive(false);
-                            PickUpPaper.Play();
-                            Destroy(hit.collider.gameObject);
-                            return;
+                            if (slot.empty)
+                            {
+                                slot.SetItem(note.noteData);
+                                UI.Instance.interactText.SetActive(false);
+                                PickUpPaper.Play();
+                                Destroy(hit.collider.gameObject);
+                                return;
+                            }
                         }
                     }
                 }
