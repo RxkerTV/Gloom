@@ -43,7 +43,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     }
     private void Update()
     {
-        if (!InventoryOn)
+        if (!InventoryOn && LookMode.Instance.PauseMenuOn == false)
         {
             // get mouse input
             float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
