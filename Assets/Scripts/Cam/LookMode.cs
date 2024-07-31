@@ -54,7 +54,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
             ToggleFlashlight(flashLightOn);
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && PauseMenuOn == false)
         {
             ToggleInventory();
         }
@@ -70,6 +70,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
                 nightVisionOverlay.SetActive(false);
                 UI.Instance.PauseMenu.SetActive(true);
                 UI.Instance.PauseOptions.SetActive(true);
+                UI.Instance.InventoryMenu.SetActive(false);
             }
 
         }

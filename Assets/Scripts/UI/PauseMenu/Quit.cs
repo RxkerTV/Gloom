@@ -29,5 +29,9 @@ public class Quit : MonoBehaviour
         LookMode.Instance.PauseMenuOn = false;
         LookMode.Instance.vol.profile = LookMode.Instance.standard;
         UI.Instance.PauseMenu.SetActive(false);
+        UI.Instance.Mainmenu.SetActive(false);
+        UI.Instance.Desktop.SetActive(false);
+        UI.Instance.Cancel.SetActive(false);
+
     }
 }
