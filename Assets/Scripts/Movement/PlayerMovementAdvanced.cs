@@ -39,6 +39,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float playerHeight;
     public LayerMask whatIsGround;
     bool grounded;
+    bool walled;
+    public float groundCheckRadius = 0.4f;
 
     [Header("Slope Handling")]
     public float maxSlopeAngle;
@@ -79,8 +81,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void Update()
     {
-        // ground check
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        GroundCheck();
+        Wallcheck();
 
         MyInput();
         SpeedControl();
@@ -91,6 +93,31 @@ public class PlayerMovementAdvanced : MonoBehaviour
             rb.drag = groundDrag;
         else
             rb.drag = 0;
+    }
+
+    private void GroundCheck()
+    {
+        grounded = Physics.SphereCast(transform.position, groundCheckRadius, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.2f, whatIsGround);
+        if (grounded)
+        {
+           // Debug.Log("Grounded on: " + hit.collider.name + " with layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
+        }
+        else
+        {
+            //Debug.Log("Not grounded");
+        }
+    }
+    private void Wallcheck()
+    {
+        walled = Physics.SphereCast(transform.position, groundCheckRadius, Vector3.forward, out RaycastHit hit, playerHeight * 0.5f + 0.2f, whatIsGround);
+        if (walled)
+        {
+            //Debug.Log("Grounded on: " + hit.collider.name + " with layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
+        }
+        else
+        {
+           // Debug.Log("Not grounded");
+        }
     }
 
     private void FixedUpdate()
