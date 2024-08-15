@@ -18,7 +18,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     public KeyCode F = KeyCode.F;
     public KeyCode Tab = KeyCode.Tab;
     public GameObject nightVisionOverlay;
-    private Light flashlight;
+    public Light flashlight;
     public bool nightVisionOn = false;
     private Camera cam;
     public bool flashLightOn = false;
@@ -50,6 +50,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
 
         if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false)
         {
+            Debug.Log("ASDASHGDHJAKSGD");
             flashLightOn = !flashLightOn;
             ToggleFlashlight(flashLightOn);
         }
