@@ -23,6 +23,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     private Camera cam;
     public bool flashLightOn = false;
     public bool PauseMenuOn = false;
+    public bool flashlightinInv = false;
 
 
     // Start is called before the first frame update
@@ -48,9 +49,8 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
             ToggleNightVision(nightVisionOn);
         }
 
-        if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false)
+        if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false && flashlightinInv==true)
         {
-            Debug.Log("ASDASHGDHJAKSGD");
             flashLightOn = !flashLightOn;
             ToggleFlashlight(flashLightOn);
         }
