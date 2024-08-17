@@ -43,11 +43,11 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false)
-        {
-            nightVisionOn = !nightVisionOn;
-            ToggleNightVision(nightVisionOn);
-        }
+        //if (Input.GetKeyDown(KeyCode.N) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false)
+        //{
+        //    nightVisionOn = !nightVisionOn;
+        //    ToggleNightVision(nightVisionOn);
+        //}
 
         if (Input.GetKeyDown(KeyCode.F) && PlayerCam.Instance.InventoryOn == false && PauseMenuOn == false && flashlightinInv==true)
         {
