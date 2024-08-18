@@ -46,7 +46,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float maxSlopeAngle;
     private RaycastHit slopeHit;
     private bool exitingSlope;
-    
+
+    [Header("Sounds")]
+    public PlayerSound FootSound;
 
     public Transform orientation;
 
@@ -54,6 +56,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     float verticalInput;
 
     Vector3 moveDirection;
+    private Vector3 _velocity;
 
     Rigidbody rb;
 
@@ -152,7 +155,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
         {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
+       
     }
+    
 
     private void StateHandler()
     {
@@ -192,6 +197,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
             {
                 state = MovementState.walking;
                 desiredMoveSpeed = walkSpeed;
+               
             }
 
             // Mode - Air
@@ -247,7 +253,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void MovePlayer()
     {
         if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
-
         {
             // calculate movement direction
             moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
@@ -263,11 +268,27 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
             // on ground
             else if (grounded)
+            {
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+                // Play footstep sound if the player is moving on the ground
+                if (moveDirection.magnitude > 0.1f)
+                {
+                    FootSound.PlayFootStep(rb.velocity);
+                }
+            }
 
             // in air
             else if (!grounded)
+            {
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+                // Play a different sound if the player is moving in the air
+                if (moveDirection.magnitude > 0.1f)
+                {
+                    FootSound.PlayFootStep(rb.velocity); // Replace with the appropriate air movement sound method
+                }
+            }
 
             // turn gravity off while on slope
             rb.useGravity = !OnSlope();
