@@ -134,7 +134,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
+        if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
         {
             readyToJump = false;
 
@@ -155,9 +155,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
         {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
-       
     }
-    
+
 
     private void StateHandler()
     {
@@ -264,6 +263,12 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
                 if (rb.velocity.y > 0)
                     rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+
+                // Play footstep sound if the player is moving on the slope
+                if (moveDirection.magnitude > 0.1f)
+                {
+                    FootSound.PlayFootStep(rb.velocity);
+                }
             }
 
             // on ground
