@@ -1,9 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class RockEntrence : MonoBehaviour
+public class RockEntrance : MonoBehaviour
 {
-    private bool inCol = false;
     public Animator rock;
     public AudioSource RocksfallingSound;
     public bool rockshaventfell = true;
@@ -11,8 +10,7 @@ public class RockEntrence : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        RocksfallingSound.mute = true;
-        Debug.Log("RocksfallingSound is muted on start: " + RocksfallingSound.mute);
+      
     }
 
     // Update is called once per frame
@@ -25,8 +23,6 @@ public class RockEntrence : MonoBehaviour
     {
         if (other.CompareTag("Player") && rockshaventfell)
         {
-            RocksfallingSound.mute = false;
-            inCol = true;
             RocksTrig();
             rockshaventfell = false;
             outsidelight.SetActive(false);
@@ -34,7 +30,6 @@ public class RockEntrence : MonoBehaviour
     }
     void RocksTrig()
     {
-        
         rock.SetTrigger("Entered");
         Debug.Log("RocksFell");
         RocksfallingSound.Play();
