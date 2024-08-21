@@ -18,7 +18,8 @@ public class UI : SingletonMonoBehaviour<UI>
     public GameObject Desktop;
     public GameObject Cancel;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
-
+    [Header("IDK")]
+    public GameObject NoRope;
     
 
     // Start is called before the first frame update
@@ -29,6 +30,7 @@ public class UI : SingletonMonoBehaviour<UI>
         Mainmenu.SetActive(false);
         Desktop.SetActive(false);
         Cancel.SetActive(false);
+        NoRope.SetActive(false);
     }
 
     // Update is called once per frame

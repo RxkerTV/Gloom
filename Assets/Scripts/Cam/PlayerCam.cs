@@ -15,7 +15,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     float xRotation;
     float yRotation;
     public bool InventoryOn;
-    private bool inReach;
+    public bool inReach;
     public Transform inventoryParent; // The parent object of the inventory item slots (GLG)
     private void Start()
     {
@@ -25,7 +25,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Reach")
+        if (other.CompareTag("Reach"))
         {
             inReach = true;
             UI.Instance.interactText.SetActive(true);
@@ -34,7 +34,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Reach")
+        if (other.CompareTag("Reach"))
         {
             inReach = false;
             UI.Instance.interactText.SetActive(false);

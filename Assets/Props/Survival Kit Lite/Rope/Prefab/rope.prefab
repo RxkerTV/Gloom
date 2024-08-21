@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4174380930097670}
   - component: {fileID: 33108066047083492}
   - component: {fileID: 23146746600646026}
+  - component: {fileID: 5611482117501347256}
   m_Layer: 0
   m_Name: rope
   m_TagString: Untagged
@@ -85,3 +86,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5611482117501347256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1845774068126050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 819bbbc9109543d4ebed58d57246d7fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  Rope: {fileID: 1845774068126050}
