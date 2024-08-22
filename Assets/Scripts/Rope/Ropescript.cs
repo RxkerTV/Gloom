@@ -32,13 +32,12 @@ public class Ropescript : SingletonMonoBehaviour<Ropescript>
     }
     void Update()
     {
-        // Perform raycasting to check if the player is looking at the door
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
         if (Physics.Raycast(ray, out hit, 2.5f, PlayerCam.Instance.interactableLayer))
         {
-            if (hit.collider.gameObject == gameObject) // Check if the raycast hit this door
+            if (hit.collider.gameObject == gameObject) 
             {
 
                 // Check for interaction input
@@ -46,7 +45,6 @@ public class Ropescript : SingletonMonoBehaviour<Ropescript>
                 {
                     HasRope = true;
                     Rope.SetActive(false);
-                    LookMode.Instance.flashlightinInv = true;
                     UI.Instance.interactText.SetActive(false);
                 }
             }
