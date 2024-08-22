@@ -4,8 +4,8 @@ using TMPro;
 
 public class TypewriterUI : MonoBehaviour
 {
-    [SerializeField] TMP_Text tmpProText; // Serialized field to assign via Inspector
-
+    public TMP_Text tmpProText; // Serialized field to assign via Inspector
+    public bool typing;
     public TMP_Text TmpProText
     {
         get { return tmpProText; }
@@ -42,24 +42,25 @@ public class TypewriterUI : MonoBehaviour
 
     IEnumerator TypeWriterTMP()
     {
-        tmpProText.text = leadingCharBeforeDelay ? leadingChar : "";
+        //tmpProText.text = leadingCharBeforeDelay ? leadingChar : "";
 
-        yield return new WaitForSeconds(delayBeforeStart);
-
+        //yield return new WaitForSeconds(delayBeforeStart);
+        typing = true;
         foreach (char c in writer)
         {
-            if (tmpProText.text.Length > 0)
-            {
-                tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
-            }
+            //if (tmpProText.text.Length > 0)
+            //{
+            //    tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
+            //}
             tmpProText.text += c;
-            tmpProText.text += leadingChar;
+            //tmpProText.text += leadingChar;
             yield return new WaitForSeconds(timeBtwChars);
+            
         }
-
-        if (leadingChar != "")
-        {
-            tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
-        }
+        typing = false;
+        //if (leadingChar != "")
+        //{
+        //    tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
+        //}
     }
 }

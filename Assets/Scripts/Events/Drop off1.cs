@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Dropoff1 : MonoBehaviour
@@ -37,16 +38,15 @@ public class Dropoff1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Left Box");
-            StartCoroutine(TextDeleteDelay());
-            UI.Instance.NoRope.SetActive(false);
+            StartCoroutine(TextDeleteDelay());  
         }
     }
 
     private IEnumerator TextDeleteDelay()
     {
-        yield return new WaitForSeconds(3);
-        StopTypewriterEffect();
+        yield return new WaitForSeconds(2.5f);
+        UI.Instance.NoRope.SetActive(false);
+        //StopTypewriterEffect();
     }
 
     private void StartTypewriterEffect(string message)
