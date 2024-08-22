@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,7 +25,8 @@ public class Dropoff1 : MonoBehaviour
                 Debug.Log("Doesn't have rope");
                 UI.Instance.NoRope.SetActive(true);
                 StartTypewriterEffect("You need a rope to use this.");
-            }
+                
+}
             else
             {
                 Debug.Log("Has rope");
@@ -34,11 +36,11 @@ public class Dropoff1 : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            StartCoroutine(TextDeleteDelay());  
+            StartCoroutine(TextDeleteDelay());
         }
     }
 
@@ -55,19 +57,6 @@ public class Dropoff1 : MonoBehaviour
         {
             typewriterUI.writer = message; // Set new message
             typewriterUI.StartTypewriter(); // Start typing effect
-        }
-    }
-
-    private void StopTypewriterEffect()
-    {
-        if (typewriterUI != null)
-        {
-            StopAllCoroutines();
-            typewriterUI.StopAllCoroutines();
-            if (typewriterUI.TmpProText != null)
-            {
-                typewriterUI.TmpProText.text = ""; // Clear text
-            }
         }
     }
 }

@@ -20,6 +20,8 @@ public class UI : SingletonMonoBehaviour<UI>
     [Header("DropOff")]
     public GameObject NoRope;
     public GameObject UseRope;
+    [Header("RAA")]
+    public GameObject ToDo;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
 
 

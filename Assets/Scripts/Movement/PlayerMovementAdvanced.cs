@@ -67,7 +67,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
         sprinting,
         crouching,
         sliding,
-        air
+        air,
+        jumping  
     }
 
     public bool sliding;
@@ -101,13 +102,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void GroundCheck()
     {
         grounded = Physics.SphereCast(transform.position, groundCheckRadius, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.2f, whatIsGround);
-        if (grounded)
+        if (grounded && state == MovementState.jumping)
         {
-           // Debug.Log("Grounded on: " + hit.collider.name + " with layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
-        }
-        else
-        {
-            //Debug.Log("Not grounded");
+            state = MovementState.walking; // Or any other suitable state
         }
     }
     private void Wallcheck()
@@ -126,6 +123,15 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void FixedUpdate()
     {
         MovePlayer();
+        ApplyGravity();
+    }
+    private void ApplyGravity()
+    {
+        if (state == MovementState.jumping || !grounded)
+        {
+            // Apply gravity manually for better control
+            rb.AddForce(Physics.gravity * rb.mass, ForceMode.Force);
+        }
     }
 
     private void MyInput()
@@ -160,52 +166,42 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void StateHandler()
     {
-        //if (PlayerCam.Instance.INventoryOn == false)
+        if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
         {
-
-            // Mode - Sliding
             if (sliding)
             {
                 state = MovementState.sliding;
 
                 if (OnSlope() && rb.velocity.y < 0.1f)
                     desiredMoveSpeed = slideSpeed;
-
                 else
                     desiredMoveSpeed = sprintSpeed;
             }
-
-
-            // Mode - Crouching
+            else if (state == MovementState.jumping)  // Check if the player is jumping
+            {
+                // During the jump, we might not change the desiredMoveSpeed
+                desiredMoveSpeed = moveSpeed; // Keep the current speed or set a jump-specific speed
+            }
             else if (Input.GetKey(crouchKey))
             {
                 state = MovementState.crouching;
                 desiredMoveSpeed = crouchSpeed;
             }
-
-            // Mode - Sprinting
             else if (grounded && Input.GetKey(sprintKey))
             {
                 state = MovementState.sprinting;
                 desiredMoveSpeed = sprintSpeed;
             }
-
-
-            // Mode - Walking
             else if (grounded)
             {
                 state = MovementState.walking;
                 desiredMoveSpeed = walkSpeed;
-               
             }
-
-            // Mode - Air
             else
             {
                 state = MovementState.air;
             }
 
-            // check if desiredMoveSpeed has changed drastically
             if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
             {
                 StopAllCoroutines();
@@ -215,7 +211,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
             {
                 moveSpeed = desiredMoveSpeed;
             }
-
 
             lastDesiredMoveSpeed = desiredMoveSpeed;
         }
@@ -253,49 +248,43 @@ public class PlayerMovementAdvanced : MonoBehaviour
     {
         if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
         {
-            // calculate movement direction
+            // Calculate movement direction
             moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-            // on slope
-            if (OnSlope() && !exitingSlope)
+            // Handle different states
+            if (state == MovementState.jumping || !grounded)
+            {
+                // Move in the air
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
+
+                // Play a different sound if the player is moving in the air
+                if (moveDirection.magnitude > 0.1f)
+                {
+                    FootSound.PlayFootStep(rb.velocity); // Replace with air movement sound if needed
+                }
+            }
+            else if (OnSlope() && !exitingSlope)
             {
                 rb.AddForce(GetSlopeMoveDirection(moveDirection) * moveSpeed * 20f, ForceMode.Force);
 
                 if (rb.velocity.y > 0)
                     rb.AddForce(Vector3.down * 80f, ForceMode.Force);
 
-                // Play footstep sound if the player is moving on the slope
                 if (moveDirection.magnitude > 0.1f)
                 {
                     FootSound.PlayFootStep(rb.velocity);
                 }
             }
-
-            // on ground
             else if (grounded)
             {
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
-                // Play footstep sound if the player is moving on the ground
                 if (moveDirection.magnitude > 0.1f)
                 {
                     FootSound.PlayFootStep(rb.velocity);
                 }
             }
 
-            // in air
-            else if (!grounded)
-            {
-                rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-
-                // Play a different sound if the player is moving in the air
-                if (moveDirection.magnitude > 0.1f)
-                {
-                    FootSound.PlayFootStep(rb.velocity); // Replace with the appropriate air movement sound method
-                }
-            }
-
-            // turn gravity off while on slope
             rb.useGravity = !OnSlope();
         }
     }
@@ -327,12 +316,18 @@ public class PlayerMovementAdvanced : MonoBehaviour
     {
         if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
         {
-            exitingSlope = true;
+            // Ensure the player is grounded before jumping
+            if (grounded)
+            {
+                exitingSlope = true;
 
-            // reset y velocity
-            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                // Reset vertical velocity
+                rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+                // Set state to jumping
+                state = MovementState.jumping;
+            }
         }
     }
     private void ResetJump()
