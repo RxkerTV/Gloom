@@ -6,7 +6,9 @@ using UnityEngine;
 public class Dropoff1 : MonoBehaviour
 {
     public GameObject DropOffBlock;
+    public GameObject DropOffPrompt;
     public TypewriterUI typewriterUI; // Reference to TypewriterUI script
+    public bool UseRopeText;
 
     void Start()
     {
@@ -29,9 +31,9 @@ public class Dropoff1 : MonoBehaviour
 }
             else
             {
-                Debug.Log("Has rope");
                 UI.Instance.UseRope.SetActive(true);
-                Destroy(this.gameObject);
+                UseRopeText = true;
+                DropOffPrompt.SetActive(false);
             }
         }
     }
@@ -41,6 +43,10 @@ void OnTriggerExit(Collider other)
         if (other.CompareTag("Player"))
         {
             StartCoroutine(TextDeleteDelay());
+        }
+        if (other.CompareTag("Player") && UseRopeText == true)
+        {
+            UI.Instance.UseRope.SetActive(false);
         }
     }
 

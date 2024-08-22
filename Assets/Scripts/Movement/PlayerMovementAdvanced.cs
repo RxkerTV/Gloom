@@ -24,6 +24,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
+    private bool hasLanded = false; 
 
     [Header("Crouching")]
     public float crouchSpeed;
@@ -49,6 +50,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     [Header("Sounds")]
     public PlayerSound FootSound;
+    public PlayerSound playerSound; 
+
 
     public Transform orientation;
 
@@ -102,9 +105,23 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private void GroundCheck()
     {
         grounded = Physics.SphereCast(transform.position, groundCheckRadius, Vector3.down, out RaycastHit hit, playerHeight * 0.5f + 0.2f, whatIsGround);
-        if (grounded && state == MovementState.jumping)
+
+        if (grounded)
         {
-            state = MovementState.walking; // Or any other suitable state
+            if (state == MovementState.jumping && !hasLanded)
+            {
+                // Player has landed
+                hasLanded = true;
+                // Play landing sound effect
+                //PlayerSound.PlayLandingSound();
+
+                // Optionally, reset state
+                state = MovementState.walking; // Or any other suitable state
+            }
+        }
+        else
+        {
+            hasLanded = false; // Reset landing status when not grounded
         }
     }
     private void Wallcheck()
@@ -257,11 +274,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
                 // Move in the air
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
 
-                // Play a different sound if the player is moving in the air
-                if (moveDirection.magnitude > 0.1f)
-                {
-                    FootSound.PlayFootStep(rb.velocity); // Replace with air movement sound if needed
-                }
+                // No footstep sounds in the air
             }
             else if (OnSlope() && !exitingSlope)
             {
@@ -285,9 +298,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
                 }
             }
 
+            // Turn gravity off while on slope
             rb.useGravity = !OnSlope();
         }
     }
+
 
     private void SpeedControl()
     {
