@@ -27,7 +27,7 @@ public class Dropoff1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            if (Ropescript.Instance.HasRope == false)
+            if (PlayerCam.Instance.HasRope == false)
             {
                 Debug.Log("Doesn't have rope");
                 UI.Instance.NoRope.SetActive(true);

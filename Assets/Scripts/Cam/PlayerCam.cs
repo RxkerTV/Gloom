@@ -4,6 +4,7 @@ using System.Diagnostics.Tracing;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 {
@@ -11,6 +12,8 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public float sensY;
     public LayerMask interactableLayer;
     public Transform orientation;
+    public Transform PlayerWhole;
+    public Transform rockDropOffLocation;
     public object FlashLight;
     public Ray ray;
     float xRotation;
@@ -20,9 +23,15 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public bool HasRope;
     private bool doorOpen;
     public Transform inventoryParent; // The parent object of the inventory item slots (GLG)
+    public Image fadeImage; // Reference to the UI Image for fading
+    public float fadeDuration = 1.5f; // Duration of the fade
+
+
     [Header("ObjectsForInteraction")]
     public GameObject flashlight;
     public GameObject Rope;
+    public GameObject RockWithoutRope;
+    public GameObject RockWithRope;
     //public GameObject Key;
     //public GameObject[] doors;
 
@@ -36,28 +45,11 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
-    //void OnTriggerEnter(Collider other)
-    //{
-    //    if (other.CompareTag("Reach"))
-    //    {
-    //        inReach = true;
-    //        UI.Instance.interactText.SetActive(true);
-    //    }
-    //}
-
-    //void OnTriggerExit(Collider other)
-    //{
-    //    if (other.CompareTag("Reach"))
-    //    {
-    //        inReach = false;
-    //        UI.Instance.interactText.SetActive(false);
-    //    }
-
-    //}
+ 
     private void Update()
     {
+        ReachCheck();
         inReach = false;
-        UI.Instance.interactText.SetActive(false);
 
         if (!InventoryOn && LookMode.Instance.PauseMenuOn == false)
         {
@@ -130,7 +122,28 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
                     UI.Instance.interactText.SetActive(false);
                 }
             }
-          
+
+            if (hit.collider.gameObject == RockWithoutRope)
+            {
+                inReach = true;
+                if (Input.GetButtonDown("Interact") && HasRope == true)
+                {
+                    RockWithoutRope.SetActive(false);
+                    RockWithRope.SetActive(true);
+                    UI.Instance.interactText.SetActive(false);
+                }
+            }
+
+            if (hit.collider.gameObject == RockWithRope)
+            {
+                inReach = true;
+                if (Input.GetButtonDown("Interact") && HasRope == true)
+                {
+                    UI.Instance.interactText.SetActive(false);
+                    StartCoroutine(FadeAndMovePlayer());
+                }
+            }
+
             //if (hit.collider.gameObject == Key)
             //{
             //    if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
@@ -140,9 +153,9 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
             //        UI.Instance.interactText.SetActive(false);
             //    }
 
-            
+
         }
-        
+
     }
     //void DoorOpens()
     //{
@@ -159,4 +172,75 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     //    door.SetBool("Closed", true);
     //    doorSoundClose.Play();
     //}
+    void ReachCheck()
+    {
+        if (inReach == true)
+        {
+            UI.Instance.interactText.SetActive(true);
+        }
+        if (inReach == false)
+        {
+            UI.Instance.interactText.SetActive(false);
+        }
+    }
+    private IEnumerator FadeToBlack()
+    {
+        if (fadeImage == null)
+            yield break;
+
+        float elapsedTime = 0f;
+        Color color = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Clamp01(elapsedTime / fadeDuration);
+            fadeImage.color = color;
+            yield return null;
+        }
+
+        // Ensure it is fully black
+        color.a = 1f;
+        fadeImage.color = color;
+
+    }
+    private IEnumerator FadeAndMovePlayer()
+    {
+        // Fade to black
+        yield return StartCoroutine(FadeToBlack());
+
+        // Move player to the new position after fading to black
+        PlayerWhole.position = rockDropOffLocation.position;
+        Debug.Log("Player moved to: " + PlayerWhole.position);
+
+        // Fade back to transparent
+        yield return StartCoroutine(FadeBackSequence());
+    }
+
+    private IEnumerator FadeBackSequence()
+    {
+        yield return new WaitForSeconds(1f); // Wait 1 second after fading to black
+        StartCoroutine(FadeToTransparent());
+    }
+
+    private IEnumerator FadeToTransparent()
+    {
+        if (fadeImage == null)
+            yield break;
+
+        float elapsedTime = 0f;
+        Color color = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Clamp01(1f - (elapsedTime / fadeDuration));
+            fadeImage.color = color;
+            yield return null;
+        }
+
+        // Ensure it is fully transparent
+        color.a = 0f;
+        fadeImage.color = color;
+    }
 }
