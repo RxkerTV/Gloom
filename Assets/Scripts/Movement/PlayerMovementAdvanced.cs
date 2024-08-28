@@ -24,7 +24,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     bool readyToJump;
-    private bool hasLanded = false; 
+    private bool hasLanded = false;
 
     [Header("Crouching")]
     public float crouchSpeed;
@@ -50,7 +50,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     [Header("Sounds")]
     public PlayerSound FootSound;
-    public PlayerSound playerSound; 
+    public PlayerSound playerSound;
 
 
     public Transform orientation;
@@ -71,7 +71,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
         crouching,
         sliding,
         air,
-        jumping  
+        jumping
     }
 
     public bool sliding;
@@ -133,7 +133,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
         }
         else
         {
-           // Debug.Log("Not grounded");
+            // Debug.Log("Not grounded");
         }
     }
 
@@ -183,56 +183,51 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void StateHandler()
     {
-        if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
-        {
-            if (sliding)
-            {
-                state = MovementState.sliding;
+        if (PlayerCam.Instance.InventoryOn || LookMode.Instance.PauseMenuOn)
+            return;
 
-                if (OnSlope() && rb.velocity.y < 0.1f)
-                    desiredMoveSpeed = slideSpeed;
-                else
-                    desiredMoveSpeed = sprintSpeed;
-            }
-            else if (state == MovementState.jumping)  // Check if the player is jumping
-            {
-                // During the jump, we might not change the desiredMoveSpeed
-                desiredMoveSpeed = moveSpeed; // Keep the current speed or set a jump-specific speed
-            }
-            else if (Input.GetKey(crouchKey))
+        if (grounded)
+        {
+            if (Input.GetKey(crouchKey))
             {
                 state = MovementState.crouching;
                 desiredMoveSpeed = crouchSpeed;
             }
-            else if (grounded && Input.GetKey(sprintKey))
+            else if (Input.GetKey(sprintKey))
             {
                 state = MovementState.sprinting;
                 desiredMoveSpeed = sprintSpeed;
             }
-            else if (grounded)
+            else if (sliding)
+            {
+                state = MovementState.sliding;
+                desiredMoveSpeed = OnSlope() && rb.velocity.y < 0.1f ? slideSpeed : sprintSpeed;
+            }
+            else
             {
                 state = MovementState.walking;
                 desiredMoveSpeed = walkSpeed;
             }
-            else
-            {
-                state = MovementState.air;
-            }
-
-            if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
-            {
-                StopAllCoroutines();
-                StartCoroutine(SmoothlyLerpMoveSpeed());
-            }
-            else
-            {
-                moveSpeed = desiredMoveSpeed;
-            }
-
-            lastDesiredMoveSpeed = desiredMoveSpeed;
         }
-    }
+        else
+        {
+            state = MovementState.air;
+            desiredMoveSpeed = moveSpeed; // Keep air speed consistent
+        }
 
+        // Lerp the movement speed if necessary
+        if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
+        {
+            StopAllCoroutines();
+            StartCoroutine(SmoothlyLerpMoveSpeed());
+        }
+        else
+        {
+            moveSpeed = desiredMoveSpeed;
+        }
+
+        lastDesiredMoveSpeed = desiredMoveSpeed;
+    }
 
     private IEnumerator SmoothlyLerpMoveSpeed()
     {

@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
-public class TypewriterUI : MonoBehaviour
+public class typewriterUI : MonoBehaviour
 {
     public TMP_Text tmpProText; // Serialized field to assign via Inspector
     public bool typing;

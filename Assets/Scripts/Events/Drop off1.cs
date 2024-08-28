@@ -8,7 +8,7 @@ public class Dropoff1 : MonoBehaviour
     public GameObject DropOffBlock;
     public GameObject DropOffPrompt;
     public GameObject RockToAttach;
-    public TypewriterUI typewriterUI;
+    public typewriterUI typewriterUI;
     public bool UseRopeText;
 
    
