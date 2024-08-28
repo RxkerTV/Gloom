@@ -40,6 +40,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode crouchKey = KeyCode.LeftControl;
+    public KeyCode crawlKey = KeyCode.C; 
+
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -69,6 +71,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     Rigidbody rb;
 
+    public CapsuleCollider playerCollider;
+    private float originalColliderHeight;
+    private Vector3 originalColliderCenter;
+
+
     public MovementState state;
     public enum MovementState
     {
@@ -88,8 +95,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
-        readyToJump = true;
+        
+        originalColliderHeight = playerCollider.height;
+        originalColliderCenter = playerCollider.center;
 
+        readyToJump = true;
         startYScale = transform.localScale.y;
     }
 
@@ -158,6 +168,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
         }
     }
 
+
     private void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -172,28 +183,66 @@ public class PlayerMovementAdvanced : MonoBehaviour
         }
 
         // Handle crouching
-        if (Input.GetKeyDown(crouchKey) && !Input.GetKey(KeyCode.C)) // Only crouch if C is not pressed
+        if (Input.GetKeyDown(crouchKey) && grounded)
         {
-            // Start crouching
-            transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+            Crouch();
         }
 
         // Handle crawling
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(crawlKey) && grounded)
         {
-            // Start crawling
-            transform.localScale = new Vector3(transform.localScale.x, crawlYScale, transform.localScale.z);
-            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+            Crawl();
         }
 
-        // Stop crouching or crawling
-        if (Input.GetKeyUp(crouchKey) || Input.GetKeyUp(KeyCode.C))
+        // Reset to standing height when crouch or crawl key is released
+        if (Input.GetKeyUp(crouchKey) || Input.GetKeyUp(crawlKey))
         {
-            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+            StandUp();
         }
     }
 
+    private void Crouch()
+    {
+        state = MovementState.crouching;
+        transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
+        playerCollider.height = originalColliderHeight * crouchYScale;
+        playerCollider.center = new Vector3(playerCollider.center.x, originalColliderCenter.y - (originalColliderHeight - playerCollider.height) / 2, playerCollider.center.z);
+        moveSpeed = crouchSpeed;
+        rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+    }
+
+    private void Crawl()
+    {
+        state = MovementState.crawling;
+        transform.localScale = new Vector3(transform.localScale.x, crawlYScale, transform.localScale.z);
+        playerCollider.height = originalColliderHeight * crawlYScale;
+        playerCollider.center = new Vector3(playerCollider.center.x, originalColliderCenter.y - (originalColliderHeight - playerCollider.height) / 2, playerCollider.center.z);
+        moveSpeed = crawlSpeed;
+        rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+    }
+
+    private void StandUp()
+    {
+        // Only stand up if neither the crouch key nor the crawl key is being pressed
+        if (!Input.GetKey(crouchKey) && !Input.GetKey(crawlKey))
+        {
+            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+            playerCollider.height = originalColliderHeight;
+            playerCollider.center = originalColliderCenter;
+
+            // Return to appropriate state based on current input
+            if (Input.GetKey(sprintKey))
+            {
+                state = MovementState.sprinting;
+                moveSpeed = sprintSpeed;
+            }
+            else
+            {
+                state = MovementState.walking;
+                moveSpeed = walkSpeed;
+            }
+        }
+    }
 
     private void StateHandler()
     {
@@ -206,13 +255,13 @@ public class PlayerMovementAdvanced : MonoBehaviour
             {
                 state = MovementState.crawling;
                 desiredMoveSpeed = crawlSpeed;
-                Debug.Log("Crawl");
+
             }
             else if (Input.GetKey(crouchKey))
             {
                 state = MovementState.crouching;
                 desiredMoveSpeed = crouchSpeed;
-                Debug.Log("Crouch");
+
             }
             else if (Input.GetKey(sprintKey))
             {
