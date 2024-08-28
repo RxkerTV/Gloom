@@ -31,6 +31,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float crouchYScale;
     private float startYScale;
 
+    [Header("Crawling")]
+    public float crawlSpeed;
+    public float crawlYScale;
+
+
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
@@ -53,6 +58,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public PlayerSound playerSound;
 
 
+
     public Transform orientation;
 
     float horizontalInput;
@@ -71,7 +77,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
         crouching,
         sliding,
         air,
-        jumping
+        jumping,
+        crawling
     }
 
     public bool sliding;
@@ -156,25 +163,32 @@ public class PlayerMovementAdvanced : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        // when to jump
+        // Handle jumping
         if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
         {
             readyToJump = false;
-
             Jump();
-
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        // start crouch
-        if (Input.GetKeyDown(crouchKey))
+        // Handle crouching
+        if (Input.GetKeyDown(crouchKey) && !Input.GetKey(KeyCode.C)) // Only crouch if C is not pressed
         {
+            // Start crouching
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
         }
 
-        // stop crouch
-        if (Input.GetKeyUp(crouchKey))
+        // Handle crawling
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            // Start crawling
+            transform.localScale = new Vector3(transform.localScale.x, crawlYScale, transform.localScale.z);
+            rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+        }
+
+        // Stop crouching or crawling
+        if (Input.GetKeyUp(crouchKey) || Input.GetKeyUp(KeyCode.C))
         {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
         }
@@ -188,10 +202,17 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
         if (grounded)
         {
-            if (Input.GetKey(crouchKey))
+            if (Input.GetKey(KeyCode.C))
+            {
+                state = MovementState.crawling;
+                desiredMoveSpeed = crawlSpeed;
+                Debug.Log("Crawl");
+            }
+            else if (Input.GetKey(crouchKey))
             {
                 state = MovementState.crouching;
                 desiredMoveSpeed = crouchSpeed;
+                Debug.Log("Crouch");
             }
             else if (Input.GetKey(sprintKey))
             {
@@ -228,7 +249,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
     }
-
     private IEnumerator SmoothlyLerpMoveSpeed()
     {
         // smoothly lerp movementSpeed to desired value
@@ -284,6 +304,16 @@ public class PlayerMovementAdvanced : MonoBehaviour
                 }
             }
             else if (grounded)
+            {
+                rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+
+                if (moveDirection.magnitude > 0.1f)
+                {
+                    FootSound.PlayFootStep(rb.velocity);
+                }
+            }
+
+            else if (state == MovementState.crawling)
             {
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
