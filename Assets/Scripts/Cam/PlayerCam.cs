@@ -32,6 +32,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public bool locked;
     public bool hasKey;
     public bool doorOpen;
+    public bool CanTurn;
 
     public Image fadeImage; // Reference to the UI Image for fading
 
@@ -48,6 +49,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public AudioSource doorSoundOpen;
     public AudioSource doorSoundClose;
 
+
     private void Start()
     {
         UI.Instance.interactText.SetActive(false);
@@ -63,6 +65,8 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 
         if (!InventoryOn && LookMode.Instance.PauseMenuOn == false)
         {
+            CanTurn = true;
+            if (CanTurn == true) { 
             // get mouse input
             float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
             float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
@@ -87,111 +91,111 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
-        {
-            #region doors
-            foreach (GameObject doorObject in doors)
+            if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
             {
-                if (hit.collider.gameObject == doorObject)
+                #region doors
+                foreach (GameObject doorObject in doors)
+                {
+                    if (hit.collider.gameObject == doorObject)
+                    {
+                        inReach = true;
+
+                        if (inReach && Input.GetButtonDown("Interact") && doorOpen == false)
+                        {
+                            DoorOpens();
+                            doorOpen = true;
+                            Debug.Log("Open");
+                        }
+                        else if (inReach && Input.GetButtonDown("Interact") && doorOpen == true)
+                        {
+                            DoorCloses();
+                            doorOpen = false;
+                            Debug.Log("Closed");
+                        }
+                        break; // Exit the loop once the door is found
+                    }
+                }
+
+                foreach (GameObject doorObject in doorLocked)
+                {
+                    if (hit.collider.gameObject == doorObject)
+                    {
+                        inReach = true;
+
+                        if (inReach && Input.GetButtonDown("Interact") && !doorOpen && hasKey)
+                        {
+                            DoorOpens();
+                            doorOpen = true;
+                            locked = false;
+                            unlocked = true;
+                        }
+                        else if (inReach && Input.GetButtonDown("Interact") && doorOpen && unlocked)
+                        {
+                            DoorCloses();
+                            doorOpen = false;
+                        }
+                        else if (inReach && Input.GetButtonDown("Interact") && !hasKey && !doorOpen)
+                        {
+                            Debug.Log("Locked");
+                        }
+                    }
+                }
+
+                if (hit.collider.gameObject == Key)
                 {
                     inReach = true;
-
-                    if (inReach && Input.GetButtonDown("Interact") && doorOpen == false)
+                    if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
                     {
-                        DoorOpens();
-                        doorOpen = true;
-                        Debug.Log("Open");
+                        Key.SetActive(false);
+                        DoorsLocked.Instance.hasKey = true;
+                        UI.Instance.interactText.SetActive(false);
                     }
-                    else if (inReach && Input.GetButtonDown("Interact") && doorOpen == true)
-                    {
-                        DoorCloses();
-                        doorOpen = false;
-                        Debug.Log("Closed");
-                    }
-                    break; // Exit the loop once the door is found
                 }
-            }
+                #endregion
 
-            foreach (GameObject doorObject in doorLocked)
-            {
-                if (hit.collider.gameObject == doorObject)
+                if (hit.collider.gameObject == flashlight)
                 {
                     inReach = true;
-
-                    if (inReach && Input.GetButtonDown("Interact") && !doorOpen && hasKey)
+                    if (Input.GetButtonDown("Interact"))
                     {
-                        DoorOpens();
-                        doorOpen = true;
-                        locked = false;
-                        unlocked = true;
-                    }
-                    else if (inReach && Input.GetButtonDown("Interact") && doorOpen && unlocked)
-                    {
-                        DoorCloses();
-                        doorOpen = false;
-                    }
-                    else if (inReach && Input.GetButtonDown("Interact") && !hasKey && !doorOpen)
-                    {
-                        Debug.Log("Locked");
+                        flashlight.SetActive(false);
+                        LookMode.Instance.flashlightinInv = true;
+                        UI.Instance.interactText.SetActive(false);
                     }
                 }
-            }
 
-            if (hit.collider.gameObject == Key)
-            {
-                inReach = true;
-                if (inReach && Input.GetButtonDown("Interact") && Key.activeInHierarchy == true)
+                if (hit.collider.gameObject == Rope)
                 {
-                    Key.SetActive(false);
-                    DoorsLocked.Instance.hasKey = true;
-                    UI.Instance.interactText.SetActive(false);
+                    inReach = true;
+                    if (Input.GetButtonDown("Interact"))
+                    {
+                        HasRope = true;
+                        Rope.SetActive(false);
+                        UI.Instance.interactText.SetActive(false);
+                    }
+                }
+
+                if (hit.collider.gameObject == RockWithoutRope)
+                {
+                    inReach = true;
+                    if (Input.GetButtonDown("Interact") && HasRope == true)
+                    {
+                        RockWithoutRope.SetActive(false);
+                        RockWithRope.SetActive(true);
+                        UI.Instance.interactText.SetActive(false);
+                    }
+                }
+
+                if (hit.collider.gameObject == RockWithRope)
+                {
+                    inReach = true;
+                    if (Input.GetButtonDown("Interact") && HasRope == true)
+                    {
+                        UI.Instance.interactText.SetActive(false);
+                        StartCoroutine(FadeAndMovePlayer());
+                    }
                 }
             }
-            #endregion
-
-            if (hit.collider.gameObject == flashlight)
-            {
-                inReach = true;
-                if (Input.GetButtonDown("Interact"))
-                {
-                    flashlight.SetActive(false);
-                    LookMode.Instance.flashlightinInv = true;
-                    UI.Instance.interactText.SetActive(false);
-                }
-            }
-
-            if (hit.collider.gameObject == Rope)
-            {
-                inReach = true;
-                if (Input.GetButtonDown("Interact"))
-                {
-                    HasRope = true;
-                    Rope.SetActive(false);
-                    UI.Instance.interactText.SetActive(false);
-                }
-            }
-
-            if (hit.collider.gameObject == RockWithoutRope)
-            {
-                inReach = true;
-                if (Input.GetButtonDown("Interact") && HasRope == true)
-                {
-                    RockWithoutRope.SetActive(false);
-                    RockWithRope.SetActive(true);
-                    UI.Instance.interactText.SetActive(false);
-                }
-            }
-
-            if (hit.collider.gameObject == RockWithRope)
-            {
-                inReach = true;
-                if (Input.GetButtonDown("Interact") && HasRope == true)
-                {
-                    UI.Instance.interactText.SetActive(false);
-                    StartCoroutine(FadeAndMovePlayer());
-                }
-            }
-
            
         }
     }

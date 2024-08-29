@@ -23,7 +23,7 @@ public class UI : SingletonMonoBehaviour<UI>
     [Header("RAA")]
     public GameObject ToDo;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
-
+    public GameObject RunTXT;
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +35,7 @@ public class UI : SingletonMonoBehaviour<UI>
         Cancel.SetActive(false);
         NoRope.SetActive(false);
         UseRope.SetActive(false);
+        RunTXT.SetActive(false);
     }
 
     // Update is called once per frame

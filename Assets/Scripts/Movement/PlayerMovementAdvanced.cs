@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerMovementAdvanced : MonoBehaviour
+public class PlayerMovementAdvanced : SingletonMonoBehaviour<PlayerMovementAdvanced>
 {
     [Header("Movement")]
     private float moveSpeed;
@@ -35,13 +36,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public float crawlSpeed;
     public float crawlYScale;
 
-
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode crouchKey = KeyCode.LeftControl;
-    public KeyCode crawlKey = KeyCode.C; 
-
+    public KeyCode crawlKey = KeyCode.C;
 
     [Header("Ground Check")]
     public float playerHeight;
@@ -59,8 +58,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
     public PlayerSound FootSound;
     public PlayerSound playerSound;
 
-
-
     public Transform orientation;
 
     float horizontalInput;
@@ -75,6 +72,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private float originalColliderHeight;
     private Vector3 originalColliderCenter;
 
+    public bool canMove;
 
     public MovementState state;
     public enum MovementState
@@ -95,7 +93,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
 
-        
         originalColliderHeight = playerCollider.height;
         originalColliderCenter = playerCollider.center;
 
@@ -112,11 +109,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
         SpeedControl();
         StateHandler();
 
-        // handle drag
-        if (grounded)
-            rb.drag = groundDrag;
-        else
-            rb.drag = 0;
+        // Handle drag
+        rb.drag = grounded ? groundDrag : 0;
     }
 
     private void GroundCheck()
@@ -127,12 +121,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
         {
             if (state == MovementState.jumping && !hasLanded)
             {
-                // Player has landed
                 hasLanded = true;
-                // Play landing sound effect
-                //PlayerSound.PlayLandingSound();
-
-                // Optionally, reset state
                 state = MovementState.walking; // Or any other suitable state
             }
         }
@@ -141,17 +130,10 @@ public class PlayerMovementAdvanced : MonoBehaviour
             hasLanded = false; // Reset landing status when not grounded
         }
     }
+
     private void Wallcheck()
     {
         walled = Physics.SphereCast(transform.position, groundCheckRadius, Vector3.forward, out RaycastHit hit, playerHeight * 0.5f + 0.2f, whatIsGround);
-        if (walled)
-        {
-            //Debug.Log("Grounded on: " + hit.collider.name + " with layer: " + LayerMask.LayerToName(hit.collider.gameObject.layer));
-        }
-        else
-        {
-            // Debug.Log("Not grounded");
-        }
     }
 
     private void FixedUpdate()
@@ -159,22 +141,20 @@ public class PlayerMovementAdvanced : MonoBehaviour
         MovePlayer();
         ApplyGravity();
     }
+
     private void ApplyGravity()
     {
         if (state == MovementState.jumping || !grounded)
         {
-            // Apply gravity manually for better control
             rb.AddForce(Physics.gravity * rb.mass, ForceMode.Force);
         }
     }
-
 
     private void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        // Handle jumping
         if (Input.GetKeyDown(jumpKey) && readyToJump && grounded)
         {
             readyToJump = false;
@@ -182,19 +162,16 @@ public class PlayerMovementAdvanced : MonoBehaviour
             Invoke(nameof(ResetJump), jumpCooldown);
         }
 
-        // Handle crouching
         if (Input.GetKeyDown(crouchKey) && grounded)
         {
             Crouch();
         }
 
-        // Handle crawling
         if (Input.GetKeyDown(crawlKey) && grounded)
         {
             Crawl();
         }
 
-        // Reset to standing height when crouch or crawl key is released
         if (Input.GetKeyUp(crouchKey) || Input.GetKeyUp(crawlKey))
         {
             StandUp();
@@ -223,25 +200,41 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void StandUp()
     {
-        // Only stand up if neither the crouch key nor the crawl key is being pressed
         if (!Input.GetKey(crouchKey) && !Input.GetKey(crawlKey))
         {
-            transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
-            playerCollider.height = originalColliderHeight;
-            playerCollider.center = originalColliderCenter;
+            // Check if there is enough space above to stand
+            if (CanStandUp())
+            {
+                transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+                playerCollider.height = originalColliderHeight;
+                playerCollider.center = originalColliderCenter;
 
-            // Return to appropriate state based on current input
-            if (Input.GetKey(sprintKey))
-            {
-                state = MovementState.sprinting;
-                moveSpeed = sprintSpeed;
-            }
-            else
-            {
-                state = MovementState.walking;
-                moveSpeed = walkSpeed;
+                if (Input.GetKey(sprintKey))
+                {
+                    state = MovementState.sprinting;
+                    moveSpeed = sprintSpeed;
+                }
+                else
+                {
+                    state = MovementState.walking;
+                    moveSpeed = walkSpeed;
+                }
             }
         }
+    }
+
+    private bool CanStandUp()
+    {
+        RaycastHit hit;
+        Vector3 rayStart = transform.position + Vector3.up * (playerCollider.height / 2);
+
+        // Cast a ray upwards from the player's position
+        if (Physics.Raycast(rayStart, Vector3.up, out hit, 2f, whatIsGround))
+        {
+            return false; // There is an object above, so the player can't stand up
+        }
+
+        return true; // No objects above, the player can stand up
     }
 
     private void StateHandler()
@@ -255,13 +248,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
             {
                 state = MovementState.crawling;
                 desiredMoveSpeed = crawlSpeed;
-
             }
             else if (Input.GetKey(crouchKey))
             {
                 state = MovementState.crouching;
                 desiredMoveSpeed = crouchSpeed;
-
             }
             else if (Input.GetKey(sprintKey))
             {
@@ -282,10 +273,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
         else
         {
             state = MovementState.air;
-            desiredMoveSpeed = moveSpeed; // Keep air speed consistent
+            desiredMoveSpeed = moveSpeed;
         }
 
-        // Lerp the movement speed if necessary
         if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
         {
             StopAllCoroutines();
@@ -298,9 +288,9 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
     }
+
     private IEnumerator SmoothlyLerpMoveSpeed()
     {
-        // smoothly lerp movementSpeed to desired value
         float time = 0;
         float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
         float startValue = moveSpeed;
@@ -327,18 +317,13 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void MovePlayer()
     {
-        if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
+        if (canMove == true)
         {
-            // Calculate movement direction
             moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
-            // Handle different states
             if (state == MovementState.jumping || !grounded)
             {
-                // Move in the air
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-
-                // No footstep sounds in the air
             }
             else if (OnSlope() && !exitingSlope)
             {
@@ -361,7 +346,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
                     FootSound.PlayFootStep(rb.velocity);
                 }
             }
-
             else if (state == MovementState.crawling)
             {
                 rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
@@ -372,27 +356,32 @@ public class PlayerMovementAdvanced : MonoBehaviour
                 }
             }
 
-            // Turn gravity off while on slope
             rb.useGravity = !OnSlope();
         }
     }
 
-
+    private void PlayerCanMove()
+    {
+        if (PlayerCam.Instance.InventoryOn==true)
+            canMove = false;
+        if (LookMode.Instance.PauseMenuOn==true)
+            canMove = false;
+        if (PlayerCam.Instance.InventoryOn == false)
+            canMove = true;
+        if (LookMode.Instance.PauseMenuOn == false)
+            canMove = true;
+    }
     private void SpeedControl()
     {
-        // limiting speed on slope
         if (OnSlope() && !exitingSlope)
         {
             if (rb.velocity.magnitude > moveSpeed)
                 rb.velocity = rb.velocity.normalized * moveSpeed;
         }
-
-        // limiting speed on ground or in air
         else
         {
             Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-            // limit velocity if needed
             if (flatVel.magnitude > moveSpeed)
             {
                 Vector3 limitedVel = flatVel.normalized * moveSpeed;
@@ -403,32 +392,27 @@ public class PlayerMovementAdvanced : MonoBehaviour
 
     private void Jump()
     {
-        if (PlayerCam.Instance.InventoryOn == false && LookMode.Instance.PauseMenuOn == false)
+        if (!PlayerCam.Instance.InventoryOn && !LookMode.Instance.PauseMenuOn)
         {
-            // Ensure the player is grounded before jumping
             if (grounded)
             {
                 exitingSlope = true;
-
-                // Reset vertical velocity
                 rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
                 rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-
-                // Set state to jumping
                 state = MovementState.jumping;
             }
         }
     }
+
     private void ResetJump()
     {
         readyToJump = true;
-
         exitingSlope = false;
     }
 
     public bool OnSlope()
     {
-        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f))
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f))
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < maxSlopeAngle && angle != 0;
@@ -441,6 +425,6 @@ public class PlayerMovementAdvanced : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
     }
-    // Assign a specific layer to the reach object
 
+    // Assign a specific layer to the reach object
 }
