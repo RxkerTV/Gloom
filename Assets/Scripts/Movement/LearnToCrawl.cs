@@ -41,5 +41,15 @@ public class LearnToCrawl : MonoBehaviour
         }
     }
 
+    //Lock playermovment(done)
+    //start animation of playercam turning towards the monster.(Done)
+    //Change the music and play audio to make it more intense. (Done)
+    //Show the monster running at you and start making the playercam pan back to the start(done)
+    //Unlock movement and prompt the player to run(done)
+    //After the player runs for a second play an audio of a object falling
+    //Player turns around and sees that hes been caved in
+    //An audio prompts saying something like "What the fuck was that"
 
+
+    //If at anypoint the monster catches the player do a jumpscare(do last since its the biggest?)
 }

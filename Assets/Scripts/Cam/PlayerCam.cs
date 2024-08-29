@@ -56,6 +56,7 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         InventoryOn = false;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
     }
 
     private void Update()
@@ -65,31 +66,30 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
 
         if (!InventoryOn && LookMode.Instance.PauseMenuOn == false)
         {
-            CanTurn = true;
-            if (CanTurn == true) { 
-            // get mouse input
-            float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-            float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+           
+                // get mouse input
+                float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
+                float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
 
-            yRotation += mouseX;
-            xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+                yRotation += mouseX;
+                xRotation -= mouseY;
+                xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            // rotate cam and orientation
-            transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
-            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+                // rotate cam and orientation
+                transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+                orientation.rotation = Quaternion.Euler(0, yRotation, 0);
 
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        }
-        else
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.Confined;
-        }
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+            else
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.Confined;
+            }
 
-        RaycastHit hit;
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+            RaycastHit hit;
+            Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
             if (Physics.Raycast(ray, out hit, 2.5f, interactableLayer))
             {
@@ -195,97 +195,97 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
                         StartCoroutine(FadeAndMovePlayer());
                     }
                 }
-            }
-           
+            
+
         }
     }
 
-        void DoorOpens()
+    void DoorOpens()
+    {
+        // Debug.Log("It Opens");
+        door.SetBool("Open", true);
+        door.SetBool("Closed", false);
+        doorSoundOpen.Play();
+    }
+
+    void DoorCloses()
+    {
+        // Debug.Log("It Closes");
+        door.SetBool("Open", false);
+        door.SetBool("Closed", true);
+        doorSoundClose.Play();
+    }
+
+    void ReachCheck()
+    {
+        if (inReach == true)
         {
-            // Debug.Log("It Opens");
-            door.SetBool("Open", true);
-            door.SetBool("Closed", false);
-            doorSoundOpen.Play();
+            UI.Instance.interactText.SetActive(true);
         }
-
-        void DoorCloses()
+        if (inReach == false)
         {
-            // Debug.Log("It Closes");
-            door.SetBool("Open", false);
-            door.SetBool("Closed", true);
-            doorSoundClose.Play();
-        }
-
-        void ReachCheck()
-        {
-            if (inReach == true)
-            {
-                UI.Instance.interactText.SetActive(true);
-            }
-            if (inReach == false)
-            {
-                UI.Instance.interactText.SetActive(false);
-            }
-        }
-
-        private IEnumerator FadeToBlack()
-        {
-            if (fadeImage == null)
-                yield break;
-
-            float elapsedTime = 0f;
-            Color color = fadeImage.color;
-
-            while (elapsedTime < fadeDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                color.a = Mathf.Clamp01(elapsedTime / fadeDuration);
-                fadeImage.color = color;
-                yield return null; 
-            }
-
-            // Ensure it is fully black
-            color.a = 1f;
-            fadeImage.color = color;
-        }
-
-        private IEnumerator FadeAndMovePlayer()
-        {
-            // Fade to black
-            yield return StartCoroutine(FadeToBlack());
-
-            // Move player to the new position after fading to black
-            PlayerWhole.position = rockDropOffLocation.position;
-            Debug.Log("Player moved to: " + PlayerWhole.position);
-
-            // Fade back to transparent
-            yield return StartCoroutine(FadeBackSequence());
-        }
-
-        private IEnumerator FadeBackSequence()
-        {
-            yield return new WaitForSeconds(1f); // Wait 1 second after fading to black
-            StartCoroutine(FadeToTransparent());
-        }
-
-        private IEnumerator FadeToTransparent()
-        {
-            if (fadeImage == null)
-                yield break;
-
-            float elapsedTime = 0f;
-            Color color = fadeImage.color;
-
-            while (elapsedTime < fadeDuration)
-            {
-                elapsedTime += Time.deltaTime;
-                color.a = Mathf.Clamp01(1f - (elapsedTime / fadeDuration));
-                fadeImage.color = color;
-                yield return null;
-            }
-
-            // Ensure it is fully transparent
-            color.a = 0f;
-            fadeImage.color = color;
+            UI.Instance.interactText.SetActive(false);
         }
     }
+
+    private IEnumerator FadeToBlack()
+    {
+        if (fadeImage == null)
+            yield break;
+
+        float elapsedTime = 0f;
+        Color color = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Clamp01(elapsedTime / fadeDuration);
+            fadeImage.color = color;
+            yield return null;
+        }
+
+        // Ensure it is fully black
+        color.a = 1f;
+        fadeImage.color = color;
+    }
+
+    private IEnumerator FadeAndMovePlayer()
+    {
+        // Fade to black
+        yield return StartCoroutine(FadeToBlack());
+
+        // Move player to the new position after fading to black
+        PlayerWhole.position = rockDropOffLocation.position;
+        Debug.Log("Player moved to: " + PlayerWhole.position);
+
+        // Fade back to transparent
+        yield return StartCoroutine(FadeBackSequence());
+    }
+
+    private IEnumerator FadeBackSequence()
+    {
+        yield return new WaitForSeconds(1f); // Wait 1 second after fading to black
+        StartCoroutine(FadeToTransparent());
+    }
+
+    private IEnumerator FadeToTransparent()
+    {
+        if (fadeImage == null)
+            yield break;
+
+        float elapsedTime = 0f;
+        Color color = fadeImage.color;
+
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            color.a = Mathf.Clamp01(1f - (elapsedTime / fadeDuration));
+            fadeImage.color = color;
+            yield return null;
+        }
+
+        // Ensure it is fully transparent
+        color.a = 0f;
+        fadeImage.color = color;
+    }
+}

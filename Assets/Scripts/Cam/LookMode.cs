@@ -20,7 +20,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
     public GameObject nightVisionOverlay;
     public Light flashlight;
     public bool nightVisionOn = false;
-    private Camera cam;
+    //private Camera cam;
     public bool flashLightOn = false;
     public bool PauseMenuOn = false;
     public bool flashlightinInv = false;
@@ -35,7 +35,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
         flashlight.enabled = false;
         nightVisionOverlay.SetActive(false);
         vol.profile = standard;
-        cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
+       // cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
         UI.Instance.InventoryMenu.SetActive(false);
         PauseMenuOn = false;
     }
@@ -88,7 +88,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
         {
             vol.profile = standard;
             nightVisionOverlay.SetActive(false);
-            cam.fieldOfView = 60;
+           // cam.fieldOfView = 60;
 
         }
     }
