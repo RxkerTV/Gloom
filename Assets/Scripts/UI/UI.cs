@@ -24,6 +24,7 @@ public class UI : SingletonMonoBehaviour<UI>
     public GameObject ToDo;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
     public GameObject RunTXT;
+    public GameObject FlashLightPickupPrompt;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +37,7 @@ public class UI : SingletonMonoBehaviour<UI>
         NoRope.SetActive(false);
         UseRope.SetActive(false);
         RunTXT.SetActive(false);
+        FlashLightPickupPrompt.SetActive(false);
     }
 
     // Update is called once per frame

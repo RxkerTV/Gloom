@@ -36,7 +36,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
         nightVisionOverlay.SetActive(false);
         vol.profile = standard;
        // cam = GameObject.Find("PlayerCam").GetComponent<Camera>();
-        UI.Instance.InventoryMenu.SetActive(false);
+        //UI.Instance.InventoryMenu.SetActive(false);
         PauseMenuOn = false;
     }
 
@@ -53,6 +53,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
         {
             flashLightOn = !flashLightOn;
             ToggleFlashlight(flashLightOn);
+            PlayASound.Instance.flashlightsound();
         }
 
         if (Input.GetKeyDown(KeyCode.Tab) && PauseMenuOn == false)

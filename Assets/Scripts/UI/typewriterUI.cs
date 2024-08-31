@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 
-public class typewriterUI : MonoBehaviour
+public class typewriterUI : SingletonMonoBehaviour<typewriterUI>
 {
     public TMP_Text tmpProText; // Serialized field to assign via Inspector
     public bool typing;
@@ -35,6 +35,11 @@ public class typewriterUI : MonoBehaviour
         }
     }
 
+    //public IEnumerator TextDeleteDelay()
+    //{
+    //    yield return new WaitForSeconds(2.5f);
+    //    UI.Instance.NoRope.SetActive(false);
+    //}
     private void OnDisable()
     {
         StopAllCoroutines();
@@ -42,25 +47,28 @@ public class typewriterUI : MonoBehaviour
 
     IEnumerator TypeWriterTMP()
     {
-        //tmpProText.text = leadingCharBeforeDelay ? leadingChar : "";
-
-        //yield return new WaitForSeconds(delayBeforeStart);
+      
         typing = true;
         foreach (char c in writer)
         {
-            //if (tmpProText.text.Length > 0)
-            //{
-            //    tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
-            //}
             tmpProText.text += c;
-            //tmpProText.text += leadingChar;
             yield return new WaitForSeconds(timeBtwChars);
             
         }
         typing = false;
-        //if (leadingChar != "")
-        //{
-        //    tmpProText.text = tmpProText.text.Substring(0, tmpProText.text.Length - leadingChar.Length);
-        //}
+      
+    }
+    //private IEnumerator TextDeleteDelay()
+    //{
+    //    yield return new WaitForSeconds(1.5f);
+    //    UI.Instance.RunTXT.SetActive(false);
+    //}
+
+    public void StartTypewriterEffect(string message)
+    {
+            writer = message; // Set new message
+            StartTypewriter(); // Start typing effect
+        
     }
 }
+

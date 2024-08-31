@@ -161,7 +161,11 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
                         flashlight.SetActive(false);
                         LookMode.Instance.flashlightinInv = true;
                         UI.Instance.interactText.SetActive(false);
-                    }
+                        LookMode.Instance.flashlight.enabled = true;
+                        UI.Instance.FlashLightPickupPrompt.SetActive(true);
+                        typewriterUI.Instance.StartTypewriterEffect("          Press [F] to toggle flashlight");
+                        StartCoroutine(TextDeleteDelay());
+                }
                 }
 
                 if (hit.collider.gameObject == Rope)
@@ -287,5 +291,11 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         // Ensure it is fully transparent
         color.a = 0f;
         fadeImage.color = color;
+    }
+
+    private IEnumerator TextDeleteDelay()
+    {
+        yield return new WaitForSeconds(2.5f);
+        UI.Instance.FlashLightPickupPrompt.SetActive(false);
     }
 }

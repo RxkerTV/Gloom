@@ -4,27 +4,31 @@ using UnityEngine.UI;
 
 public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
 {
+    [Header("Misc")]
     public Animator MonsterAnimationAndPlayerCam;
     public typewriterUI typewriterUI;
     public AudioSource MonsterSource;
     public AudioClip MonsterScream;
     public AudioSource RocksfallingSound;
     public bool HasntPlayed;
+    [Header("GameObjects")]
     public GameObject TheRake;
+    public GameObject Dust;
+    [Header("Cameras")]
     public Camera mainCamera;
     public Camera secondaryCamera;
     public Camera thirdCamera;
-    public GameObject RocksAndDust;
+
 
    // public Collider monsterCollider;
 
     private void Start()
     {
-        Debug.Log("CrawlScare script started.");
         HasntPlayed = true;
         PlayerMovementAdvanced.Instance.canMove = true;
         TheRake.SetActive(false);
         MonsterAnimationAndPlayerCam.SetBool("hasntPlayed", true);
+        Dust.SetActive(false);
 
         if (typewriterUI == null)
         {
@@ -33,8 +37,6 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
 
         // Initialize camera settings
         SwitchToMainCamera(); // Ensure main camera is active initially
-
-        Debug.Log("Initial setup complete.");
     }
 
     private void Update()
@@ -70,14 +72,13 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
         MonsterAnimationAndPlayerCam.SetTrigger("PlayercamTowardsMonster");
         MonsterSource.Play();
         SwitchToSecondaryCamera(); // Switch to secondary camera when the animation starts
+        PlayASound.Instance.AmbientSource.mute = true;
     }
 
     public void TriggerJumpscare()
-    {
-        Debug.Log("TriggerJumpscare called.");
+    { 
         SwitchToThirdCamera();
         MonsterSource.mute = false;
-        Debug.Log("Player entered monster's collider, playing jumpscare animation");
         PlayerMovementAdvanced.Instance.canMove = false; // Disable player movement
         MonsterAnimationAndPlayerCam.SetTrigger("jumpscareTrigger");
         MonsterSource.PlayOneShot(MonsterScream); // Play scream sound for the jumpscare
@@ -111,8 +112,18 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
     {
         MonsterSource.mute = true;
         RocksfallingSound.Play();
+        MonsterAnimationAndPlayerCam.SetTrigger("rocksCrush");
+        MonsterAnimationAndPlayerCam.SetBool("ChaseHasPlayed", true);
+
+
+    }
+
+    public void OnRocksFallEnd()
+    {
         TheRake.SetActive(false);
-        RocksAndDust.SetActive(true);
+        Dust.SetActive(true);
+        MonsterAnimationAndPlayerCam.SetBool("RocksHaveFallen", true);
+        PlayASound.Instance.AmbientSource.mute = false;
     }
 
     private IEnumerator SwitchToMainCameraAfterDelay()
@@ -147,7 +158,7 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
 
     private IEnumerator TextDeleteDelay()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2.5f);
         UI.Instance.RunTXT.SetActive(false);
     }
 
