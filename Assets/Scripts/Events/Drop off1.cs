@@ -40,15 +40,15 @@ public class Dropoff1 : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            StartCoroutine(TextDeleteDelay());
+            StartCoroutine(TextDeleteDelayNoRope());
         }
-        if (other.CompareTag("Player") && UseRopeText == true)
-        {
-            UI.Instance.UseRope.SetActive(false);
-        }
+        //if (other.CompareTag("Player") && UseRopeText == true)
+        //{
+        //    UI.Instance.UseRope.SetActive(false);
+        //}
     }
 
-    private IEnumerator TextDeleteDelay()
+    IEnumerator TextDeleteDelayNoRope()
     {
         yield return new WaitForSeconds(2.5f);
         UI.Instance.NoRope.SetActive(false);

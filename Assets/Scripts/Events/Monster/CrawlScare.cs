@@ -61,7 +61,7 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
     {
         if (other.CompareTag("Player"))
         {
-            StartCoroutine(TextDeleteDelay());
+            StartCoroutine(TextDeleteDelayRun());
         }
 
         // if player runs into the collider of the monster trigger jumpscare. HOW IS IT SO DAM HARD TO DO THIS
@@ -156,7 +156,7 @@ public class CrawlScare : SingletonMonoBehaviour<CrawlScare>
         thirdCamera.enabled = false;
     }
 
-    private IEnumerator TextDeleteDelay()
+    private IEnumerator TextDeleteDelayRun()
     {
         yield return new WaitForSeconds(2.5f);
         UI.Instance.RunTXT.SetActive(false);

@@ -64,11 +64,11 @@ public class typewriterUI : SingletonMonoBehaviour<typewriterUI>
     //    UI.Instance.RunTXT.SetActive(false);
     //}
 
-    public void StartTypewriterEffect(string message)
-    {
-            writer = message; // Set new message
-            StartTypewriter(); // Start typing effect
+    //public void StartTypewriterEffect(string message)
+    //{
+    //        writer = message; // Set new message
+    //        StartTypewriter(); // Start typing effect
         
-    }
+    //} 
 }
 

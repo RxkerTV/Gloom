@@ -44,11 +44,14 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
     public GameObject Key;
     public GameObject[] doors;
     public GameObject[] doorLocked;
+    public GameObject LockerWithRope;
+    public GameObject PadLock1;
+
 
     public Animator door;
     public AudioSource doorSoundOpen;
     public AudioSource doorSoundClose;
-
+    public typewriterUI typewriterUI;
 
     private void Start()
     {
@@ -163,8 +166,8 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
                         UI.Instance.interactText.SetActive(false);
                         LookMode.Instance.flashlight.enabled = true;
                         UI.Instance.FlashLightPickupPrompt.SetActive(true);
-                        typewriterUI.Instance.StartTypewriterEffect("          Press [F] to toggle flashlight");
-                        StartCoroutine(TextDeleteDelay());
+                        StartTypewriterEffectPrompt("          Press [F] to toggle flashlight");
+                        StartCoroutine(TextDeleteDelayFlashLightPrompt());
                 }
                 }
 
@@ -293,9 +296,18 @@ public class PlayerCam : SingletonMonoBehaviour<PlayerCam>
         fadeImage.color = color;
     }
 
-    private IEnumerator TextDeleteDelay()
+    private IEnumerator TextDeleteDelayFlashLightPrompt()
     {
         yield return new WaitForSeconds(2.5f);
         UI.Instance.FlashLightPickupPrompt.SetActive(false);
+    }
+
+    private void StartTypewriterEffectPrompt(string message)
+    {
+        if (typewriterUI != null)
+        {
+            typewriterUI.writer = message; // Set new message
+            typewriterUI.StartTypewriter(); // Start typing effect
+        }
     }
 }

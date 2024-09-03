@@ -5,10 +5,10 @@ using UnityEngine;
 public class UI : SingletonMonoBehaviour<UI>
 {
     [Header("Inventory Panel")]
-    public GameObject inventoryPanel;
-    public GameObject itemSlots;
-    public GameObject itemSlotPrefb;
-    public GameObject InventoryMenu;
+   // public GameObject inventoryPanel;
+  //  public GameObject itemSlots;
+  //  public GameObject itemSlotPrefb;
+  //  public GameObject InventoryMenu;
     public GameObject interactText;
     [Header("PauseMENU----------")]
     public GameObject PauseMenu;
@@ -23,6 +23,7 @@ public class UI : SingletonMonoBehaviour<UI>
     [Header("RAA")]
     public GameObject ToDo;
     public List<ItemSlot> itemSlotList = new List<ItemSlot>();
+
     public GameObject RunTXT;
     public GameObject FlashLightPickupPrompt;
 
@@ -40,9 +41,8 @@ public class UI : SingletonMonoBehaviour<UI>
         FlashLightPickupPrompt.SetActive(false);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

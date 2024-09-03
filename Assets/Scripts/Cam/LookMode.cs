@@ -72,7 +72,7 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
                 nightVisionOverlay.SetActive(false);
                 UI.Instance.PauseMenu.SetActive(true);
                 UI.Instance.PauseOptions.SetActive(true);
-                UI.Instance.InventoryMenu.SetActive(false);
+               // UI.Instance.InventoryMenu.SetActive(false);
             }
 
         }
@@ -110,12 +110,12 @@ public class LookMode : SingletonMonoBehaviour<LookMode>
             vol.profile = inventory;
             flashlight.enabled = false;
             nightVisionOverlay.SetActive(false);
-            UI.Instance.InventoryMenu.SetActive(true);
+            //UI.Instance.InventoryMenu.SetActive(true);
         }
         else
         {
             vol.profile = standard;
-            UI.Instance.InventoryMenu.SetActive(false);
+            //UI.Instance.InventoryMenu.SetActive(false);
         }
     }
 }
